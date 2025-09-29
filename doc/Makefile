@@ -1,32 +1,38 @@
 -include tpl/Makefile
 
-RES_DIR := res
-TPL_DIR := tpl
-RES_REPO := git@github.com:ecoslab/ecos-res.git
-TPL_REPO := git@github.com:ecoslab/ecos-tpl-mkdocs.git
-LINK_TARGETS := src/zh src/en
+REPO_RES_DIR := res
+REPO_TPL_DIR := tpl
+ifeq ($(MKDOCS_ENV),deploy)
+    REPO_PREFIX := https://github.com/
+else
+    REPO_PREFIX := git@github.com:
+endif
+REPO_RES_URL := $(REPO_PREFIX)ecoslab/ecos-res.git
+REPO_TPL_URL := $(REPO_PREFIX)ecoslab/ecos-tpl-mkdocs.git
+
+LINK_TARGET := src/zh src/en
 
 setup:
 	@echo "Checking and setting up directories..."
-	@if [ ! -d "$(RES_DIR)" ]; then \
+	@if [ ! -d "$(REPO_RES_DIR)" ]; then \
 		echo "Cloning res repository..."; \
-		git clone $(RES_REPO) $(RES_DIR); \
+		git clone $(REPO_RES_URL) $(REPO_RES_DIR); \
 	else \
-		echo "$(RES_DIR) already exists, updating..."; \
-		cd $(RES_DIR) && git pull; \
+		echo "$(REPO_RES_DIR) already exists, updating..."; \
+		cd $(REPO_RES_DIR) && git pull; \
 	fi
 
-	@if [ ! -d "$(TPL_DIR)" ]; then \
+	@if [ ! -d "$(REPO_TPL_DIR)" ]; then \
 		echo "Cloning tpl repository..."; \
-		git clone $(TPL_REPO) $(TPL_DIR); \
+		git clone $(REPO_TPL_URL) $(REPO_TPL_DIR); \
 	else \
-		echo "$(TPL_DIR) already exists, updating..."; \
-		cd $(TPL_DIR) && git pull; \
+		echo "$(REPO_TPL_DIR) already exists, updating..."; \
+		cd $(REPO_TPL_DIR) && git pull; \
 	fi
 
-	@for target in $(LINK_TARGETS); do \
+	@for target in $(LINK_TARGET); do \
 		if [ ! -e "$$target/res" ]; then \
-			echo "Creating symlink: $$target/res -> $(RES_DIR)"; \
+			echo "Creating symlink: $$target/res -> $(REPO_RES_DIR)"; \
 			cd $$target && ln -sf ../../res ./ && cd -; \
 		else \
 			echo "Symlink or file already exists: $$target"; \
