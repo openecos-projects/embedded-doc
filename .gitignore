@@ -1,0 +1,10 @@
+# MkDocs
+.venv/
+site/
+
+# Repo
+res/
+tpl/
+
+# Link
+res

@@ -1,0 +1,36 @@
+INHERIT: tpl/cfg/mkdocs_base.yml
+
+docs_dir: src/zh
+site_dir: site
+
+site_name: ECOS嵌入式项目
+
+edit_uri: edit/main/doc/src/zh
+
+repo_url: https://github.com/ecoslab/ecoslab-embed
+repo_name: ecoslab/ecoslab-embed
+
+theme:
+  palette:
+  - scheme: default
+    primary: blue
+    accent: blue
+    toggle:
+      icon: material/brightness-7
+      name: 切换到深色模式
+  - scheme: slate
+    primary: blue
+    accent: blue
+    toggle:
+      icon: material/brightness-4
+      name: 切换到浅色模式
+  language: zh
+
+nav:
+  - 项目主页: index.md
+  - 板卡目录:
+    - 星空板卡:
+      - page/board/starry-sky/index.md
+      - v1.2: page/board/starry-sky/v1.2.md
+      - v1.3: page/board/starry-sky/v1.3.md
+      - v2.1: page/board/starry-sky/v2.1.md

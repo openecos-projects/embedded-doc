@@ -1,0 +1,30 @@
+INHERIT: tpl/cfg/mkdocs_base.yml
+
+docs_dir: src/en
+site_dir: site/en
+
+site_name: ECOS Embedded Project
+
+edit_uri: edit/main/doc/src/en
+
+repo_url: https://github.com/ecoslab/ecoslab-embed
+repo_name: ecoslab/ecoslab-embed
+
+theme:
+  palette:
+  - scheme: default
+    primary: blue
+    accent: blue
+    toggle:
+      icon: material/brightness-7
+      name: Switch to dark mode
+  - scheme: slate
+    primary: blue
+    accent: blue
+    toggle:
+      icon: material/brightness-4
+      name: Switch to light mode
+  language: en
+
+nav:
+  - Project Home: index.md
