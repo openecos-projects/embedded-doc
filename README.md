@@ -1,4 +1,4 @@
-# ECOS embedded project
+# ECOS Embedded Project
 
 Run the following commands to visit documentation at localhost:
 
