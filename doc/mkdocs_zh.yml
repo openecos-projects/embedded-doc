@@ -30,7 +30,7 @@ nav:
   - 项目主页: index.md
   - 板卡目录:
     - 星空板卡:
-      - page/board/starry-sky/index.md
-      - v1.2: page/board/starry-sky/v1.2.md
-      - v1.3: page/board/starry-sky/v1.3.md
-      - v2.1: page/board/starry-sky/v2.1.md
+      - page/brd/starry-sky/index.md
+      - v1.2: page/brd/starry-sky/v1.2.md
+      - v1.3: page/brd/starry-sky/v1.3.md
+      - v2.1: page/brd/starry-sky/v2.1.md
