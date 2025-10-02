@@ -65,8 +65,39 @@
 <!-- 开发进度图 -->
 
 ## 板卡型号
-下面展示了所有板卡的 **开发文档** 页面，可以点击下面卡片中的 ***详细信息*** 跳转到特定板卡的页面。
-<TheBoards />
+下面展示了所有板卡的**开发文档**页面，可以点击下面卡片中的***详细信息***跳转到特定板卡的页面。
+
+<div class="grid cards" markdown>
+
+-   <p class="ecos-brd-card-img"><img src="https://bucket.ecoslab.com/img/brd/starry-sky/v1.2/brd_smt_top.png" /></p>
+
+    标题：星空板卡V1.2<br />
+    简介：一生一芯三期第一批板卡
+
+    <p class="ecos-brd-card-link"><a href="v1.2">详细信息</a></p>
+
+-   <p class="ecos-brd-card-img"><img src="https://bucket.ecoslab.com/img/brd/starry-sky/v1.3/brd_smt_top.png" /></p>
+
+    标题：星空板卡V1.3<br />
+    简介：一生一芯三期第二批板卡
+
+    <p class="ecos-brd-card-link"><a href="v1.3">详细信息</a></p>
+
+-   <p class="ecos-brd-card-img"><img src="https://bucket.ecoslab.com/img/brd/starry-sky/v2.1/brd_smt_top.png" /></p>
+
+    标题：星空板卡V2.1<br />
+    简介：一生一芯四期第一批板卡
+
+    <p class="ecos-brd-card-link"><a href="v2.1">详细信息</a></p>
+
+-   <p class="ecos-brd-card-img"><img src="https://bucket.ecoslab.com/img/brd/starry-sky/v3.1/brd_smt_top.png" /></p>
+
+    标题：星空板卡V3.1（星空派）<br />
+    简介：一生一芯五第一批板卡
+
+    <p class="ecos-brd-card-link"><a href="v3.1">详细信息</a></p>
+
+</div>
 
 ## 用户许可
 本文档用户许可在撰写时参考了互联网上众多内容文档的许可条款，**希望能够在保证文档内容版权完整的前提下，为用户提供尽可能开放的阅读和引用体验**。请用户仔细阅读并透彻理解本声明，一旦用户在阅读和其他平台以任何形式发布本文档内容时，均视为已经阅读**以下全部条款**并确认全部无条件接受。
@@ -92,3 +123,5 @@
 - 本团队有权随时对本声明条款及附件内容进行单方面的变更，并以消息推送、网页公告等方式予以公布，公布后立即自动生效，无需另行单独通知；若您在本声明内容公告变更后继续使用的，表示您已充分阅读、理解并接受修改后的声明内容。
 
 **{--一生一芯--}项目组对以上所有条款拥有最终解释权**
+
+> 作者：缪宇驰（maksyuki）、缪宇飏（myyerrol）
