@@ -31,6 +31,7 @@ nav:
   - 板卡目录:
     - 星空板卡:
       - page/brd/starry-sky/index.md
-      - v1.2: page/brd/starry-sky/v1.2.md
-      - v1.3: page/brd/starry-sky/v1.3.md
-      - v2.1: page/brd/starry-sky/v2.1.md
+      - v1.2（一生一芯三期）: page/brd/starry-sky/v1.2.md
+      - v1.3（一生一芯三期）: page/brd/starry-sky/v1.3.md
+      - v2.1（一生一芯四期）: page/brd/starry-sky/v2.1.md
+      - v3.1（一生一芯五期）: page/brd/starry-sky/v3.1.md
