@@ -27,7 +27,7 @@ theme:
   language: zh
 
 nav:
-  - 项目主页: index.md
+  - 社区主页: index.md
   - 板卡百科:
     - page/brd/index.md
     - 星空板卡:
