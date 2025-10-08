@@ -19,5 +19,27 @@
 ## 板卡型号
 下面展示了所有板卡的**开发文档**页面，可以点击下面卡片中的**详细信息**跳转到特定板卡的页面。
 
+<div class="grid cards">
+  <ul>
+    <li>
+      <p class="ecos-brd-card-img">
+        <img src="https://dummyimage.com/250x200/eee/aaa&text=待定" />
+      </p>
+      <p>标题：沧海板卡V1.0<br />简介：2025年08月板卡</p>
+      <p class="ecos-brd-card-link">
+        <a href="v1.0">详细信息</a>
+      </p>
+    </li>
+    <li>
+      <p class="ecos-brd-card-img">
+        <img src="https://dummyimage.com/250x200/eee/aaa&text=待定" />
+      </p>
+      <p>标题：待定<br />简介：待定</p>
+      <p class="ecos-brd-card-link">
+        <a>详细信息</a>
+      </p>
+    </li>
+  </ul>
+</div>
 
 > 作者：缪宇飏（myyerrol）

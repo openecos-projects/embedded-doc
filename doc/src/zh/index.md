@@ -34,10 +34,10 @@ limitations under the License.
 ```
 
 ## 联系
-| 姓名 | 角色 | 联系方式 | 负责事项 |
-| -  | - | - | - |
-| 李  好 | 管理员、贡献者 | [lihao2024@ict.ac.cn](mailto:lihao2024@ict.ac.cn)   | 社区管理、PCB设计、包装设计、嵌入式软件 |
-| 缪宇驰 | 管理员、贡献者 | [miaoyuchi@ict.ac.cn](mailto:miaoyuchi@ict.ac.cn)   | 社区管理、PCB设计、包装设计             |
-| 缪宇飏 | 管理员         | [miaoyuyang@ict.ac.cn](mailto:miaoyuyang@ict.ac.cn) | 社区管理、文档维护                      |
+| 姓名 | 角色 | 联系方式 | 负责内容 |
+| - | - | - | - |
+| 李好 | 管理员、贡献者 | [lihao2024@ict.ac.cn](mailto:lihao2024@ict.ac.cn) | 社区管理、PCB设计、包装设计、嵌入式软件 |
+| 缪宇驰 | 管理员、贡献者 | [miaoyuchi@ict.ac.cn](mailto:miaoyuchi@ict.ac.cn) | 社区管理、PCB设计、包装设计 |
+| 缪宇飏 | 管理员 | [miaoyuyang@ict.ac.cn](mailto:miaoyuyang@ict.ac.cn) | 社区管理、文档维护 |
 
 > 作者：缪宇飏（myyerrol）
