@@ -14,13 +14,13 @@ LINK_TARGET := src/zh src/en
 
 setup:
 	@echo "Checking and setting up directories..."
-	# @if [ ! -d "$(REPO_RES_DIR)" ]; then \
-	# 	echo "Cloning res repository..."; \
-	# 	git clone $(REPO_RES_URL) $(REPO_RES_DIR); \
-	# else \
-	# 	echo "$(REPO_RES_DIR) already exists, updating..."; \
-	# 	cd $(REPO_RES_DIR) && git pull; \
-	# fi
+	@if [ ! -d "$(REPO_RES_DIR)" ]; then \
+		echo "Cloning res repository..."; \
+		git clone $(REPO_RES_URL) $(REPO_RES_DIR); \
+	else \
+		echo "$(REPO_RES_DIR) already exists, updating..."; \
+		cd $(REPO_RES_DIR) && git pull; \
+	fi
 
 	@if [ ! -d "$(REPO_TPL_DIR)" ]; then \
 		echo "Cloning tpl repository..."; \
@@ -30,14 +30,14 @@ setup:
 		cd $(REPO_TPL_DIR) && git pull; \
 	fi
 
-	# @for target in $(LINK_TARGET); do \
-	# 	if [ ! -e "$$target/res" ]; then \
-	# 		echo "Creating symlink: $$target/res -> $(REPO_RES_DIR)"; \
-	# 		cd $$target && ln -sf ../../res ./ && cd -; \
-	# 	else \
-	# 		echo "Symlink or file already exists: $$target"; \
-	# 	fi; \
-	# done
-	# @echo "Setup completed."
+	@for target in $(LINK_TARGET); do \
+		if [ ! -e "$$target/res" ]; then \
+			echo "Creating symlink: $$target/res -> $(REPO_RES_DIR)"; \
+			cd $$target && ln -sf ../../res ./ && cd -; \
+		else \
+			echo "Symlink or file already exists: $$target"; \
+		fi; \
+	done
+	@echo "Setup completed."
 
 .PHONY: setup
