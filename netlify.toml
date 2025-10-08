@@ -1,5 +1,0 @@
-[build]
-  base = "doc/"
-  publish = "site/"
-  command = "make setup && make build"
-  environment = { PYTHON_VERSION = "3.10"}
