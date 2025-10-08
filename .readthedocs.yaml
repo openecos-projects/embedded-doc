@@ -10,4 +10,4 @@ build:
   jobs:
     build:
       html:
-        - cd doc && make setup && make build && cd site
+        - cd doc && make setup && make build-rtd
