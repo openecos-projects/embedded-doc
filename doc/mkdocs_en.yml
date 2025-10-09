@@ -27,4 +27,4 @@ theme:
   language: en
 
 nav:
-  - Project Home: index.md
+  - "": index.md
