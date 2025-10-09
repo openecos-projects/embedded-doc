@@ -27,4 +27,4 @@ theme:
   language: en
 
 nav:
-  - "": index.md
+  - "Community Home": index.md
