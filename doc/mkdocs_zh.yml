@@ -7,8 +7,8 @@ site_name: ECOS嵌入式社区
 
 edit_uri: edit/main/doc/src/zh
 
-repo_url: https://github.com/ecoslab/embedded-doc
-repo_name: ecoslab/embedded-doc
+repo_url: https://github.com/openecos-projects/embedded-doc
+repo_name: openecos-projects/embedded-doc
 
 theme:
   palette:
