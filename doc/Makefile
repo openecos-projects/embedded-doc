@@ -7,8 +7,8 @@ ifeq ($(MKDOCS_ENV),deploy)
 else
     REPO_PREFIX := git@github.com:
 endif
-REPO_RES_URL := $(REPO_PREFIX)ecoslab/website-res.git
-REPO_TPL_URL := $(REPO_PREFIX)ecoslab/website-tpl-mkdocs.git
+REPO_RES_URL := $(REPO_PREFIX)openecos-projects/website-res.git
+REPO_TPL_URL := $(REPO_PREFIX)openecos-projects/website-tpl-mkdocs.git
 
 LINK_TARGET := src/zh src/en
 
