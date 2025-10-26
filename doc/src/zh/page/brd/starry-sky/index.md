@@ -73,7 +73,7 @@
       <p class="ecos-brd-card-img">
         <img src="../../../res/img/brd/starry-sky/v1.2/core/board_smt_top.png" />
       </p>
-      <p>标题：星空板卡V1.2<br />简介：一生一芯三期第一批板卡</p>
+      <p>标题：星空板卡v1.2<br />简介：一生一芯三期第一批板卡</p>
       <p class="ecos-brd-card-link">
         <a href="v1.2">详细信息</a>
       </p>
@@ -82,7 +82,7 @@
       <p class="ecos-brd-card-img">
         <img src="../../../res/img/brd/starry-sky/v1.3/core/board_smt_top.png" />
       </p>
-      <p>标题：星空板卡V1.3<br />简介：一生一芯三期第二批板卡</p>
+      <p>标题：星空板卡v1.3<br />简介：一生一芯三期第二批板卡</p>
       <p class="ecos-brd-card-link">
         <a href="v1.3">详细信息</a>
       </p>
@@ -91,18 +91,18 @@
       <p class="ecos-brd-card-img">
         <img src="../../../res/img/brd/starry-sky/v2.1/core/board_smt_top.png" />
       </p>
-      <p>标题：星空板卡V2.1<br />简介：一生一芯四期第一批板卡</p>
+      <p>标题：星空板卡v2.1<br />简介：一生一芯四期第一批板卡</p>
       <p class="ecos-brd-card-link">
         <a href="v2.1">详细信息</a>
       </p>
     </li>
     <li>
       <p class="ecos-brd-card-img">
-        <img src="../../../res/img/brd/starry-sky/v3.1/brd_smt_top.png" />
+        <img src="../../../res/img/brd/starry-sky/v3.0/brd_smt_top.png" />
       </p>
-      <p>标题：星空板卡V3.1（星空派）<br />简介：一生一芯五第一批板卡</p>
+      <p>标题：星空板卡v3.0（星空派）<br />简介：一生一芯五第一批板卡</p>
       <p class="ecos-brd-card-link">
-        <a href="v3.1">详细信息</a>
+        <a href="v3.0">详细信息</a>
       </p>
     </li>
   </ul>
