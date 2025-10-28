@@ -30,12 +30,12 @@ nav:
   - 社区主页: index.md
   - 板卡百科:
     - page/brd/index.md
-    - 星空板卡:
-      - page/brd/starry-sky/index.md
-      - v1.2（一生一芯三期）: page/brd/starry-sky/v1.2.md
-      - v1.3（一生一芯三期）: page/brd/starry-sky/v1.3.md
-      - v2.1（一生一芯四期）: page/brd/starry-sky/v2.1.md
-      - v3.0（一生一芯五期）: page/brd/starry-sky/v3.0.md
-    - 沧海板卡:
-      - page/brd/vast-sea/index.md
-      - v1.0（2025年08月）: page/brd/vast-sea/v1.0.md
+    - 星空L:
+      - page/brd/starry-sky-l/index.md
+      - v1.2（一生一芯三期）: page/brd/starry-sky-l/v1.2.md
+      - v1.3（一生一芯三期）: page/brd/starry-sky-l/v1.3.md
+      - v2.1（一生一芯四期）: page/brd/starry-sky-l/v2.1.md
+      - v3.0（一生一芯五期）: page/brd/starry-sky-l/v3.0.md
+    - 星空C:
+      - page/brd/starry-sky-c/index.md
+      - v1.0: page/brd/starry-sky-c/v1.0.md
