@@ -12,6 +12,8 @@ REPO_TPL_URL := $(REPO_PREFIX)openecos-projects/website-tpl-mkdocs.git
 
 LINK_TARGET := src/zh src/en
 
+.PHONY: setup
+
 setup:
 	@echo "Checking and setting up directories..."
 	@if [ ! -d "$(REPO_RES_DIR)" ]; then \
@@ -39,5 +41,3 @@ setup:
 		fi; \
 	done
 	@echo "Setup completed."
-
-.PHONY: setup
