@@ -3,7 +3,7 @@ INHERIT: tpl/cfg/mkdocs_base.yml
 docs_dir: src/en
 site_dir: site/en
 
-site_name: ECOS Embedded Community
+site_name: ECOS Embedded
 
 edit_uri: edit/main/doc/src/en
 
@@ -27,4 +27,4 @@ theme:
   language: en
 
 nav:
-  - "Community Home": index.md
+  - "Home": index.md

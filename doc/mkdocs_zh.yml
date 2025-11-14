@@ -3,7 +3,7 @@ INHERIT: tpl/cfg/mkdocs_base.yml
 docs_dir: src/zh
 site_dir: site
 
-site_name: ECOS嵌入式社区
+site_name: ECOS嵌入式
 
 edit_uri: edit/main/doc/src/zh
 
@@ -27,7 +27,7 @@ theme:
   language: zh
 
 nav:
-  - 社区主页: index.md
+  - 项目主页: index.md
   - 板卡百科:
     - page/brd/index.md
     - 星空L:
