@@ -8,7 +8,7 @@
 
 <img src="../../../res/img/sdk/env/env_windows_setting.png" alt="1" style="zoom:80%;" />
 
-（2）找到开发者选项，开启**<font color='blue'>“开发人员模式”</font>**
+（2）找到开发者选项，开启“开发人员模式”
 
 <img src="../../../res/img/sdk/env/env_windows_setting1.png" alt="2" style="zoom:80%;" />
 ### 2. 启用Linux子系统
@@ -21,7 +21,7 @@
 
 <img src="../../../res/img/sdk/env/enable Linux2.png" alt="4" style="zoom:80%;" />
 
-（3）往下滑勾选“适用于Linux的Windows”子系统选项，更改完立即**<font color='red'>重启电脑</font>**。
+（3）往下滑勾选“适用于Linux的Windows”子系统选项，更改完立即**<font>重启电脑</font>**。
 
 <img src="../../../res/img/sdk/env/enable Linux3.png" alt="5" style="zoom:80%;" />
 
@@ -36,7 +36,7 @@
 
 <img src="../../../res/img/sdk/env/install Linux2.png" alt="8" style="zoom:67%;" />
 
-（3）启动后创建账号，填写用户名，注意用户名**<font color='red'>不能有大写字母</font>**。
+（3）启动后创建账号，填写用户名，注意用户名**<font>不能有大写字母</font>**。
 
 <img src="../../../res/img/sdk/env/install Linux3.png" alt="8" style="zoom:67%;" />
 
@@ -148,7 +148,7 @@ sudo apt-get install gcc make unzip -y
 
 <img src="../../../res/img/sdk/env/Installing Git on Ubuntu7.png" alt="7" style="zoom: 80%;" />
 
-（3）执行以下代码来**<font color='red'>更新一下环境变量</font>**
+（3）执行以下代码来**<font>更新一下环境变量</font>**
 
 ```
 source ~/.bashrc
