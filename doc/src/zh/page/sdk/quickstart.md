@@ -29,11 +29,11 @@ sudo apt-get install g++ build-essential -y
 
 <img src="../../../res/img/sdk/quickstart/Create_sample_project2.png" alt="9" style="zoom:80%;" />
 
-（5）直接按Enter进入Target Hareware Configuration，再回车选择板卡**<font color='blue'>C2</font>**
+（5）直接按Enter进入Target Hareware Configuration，再回车选择板卡**<font >C2</font>**
 
 <img src="../../../res/img/sdk/quickstart/Create_sample_project3.png" alt="10" style="zoom:80%;" />
 
-​	再进入Memory Region Selection选择**<font color='blue'>SRAM</font>**，保存
+​	再进入Memory Region Selection选择**<font>SRAM</font>**，保存
 
 <img src="../../../res/img/sdk/quickstart/Create_sample_project4.png" alt="11" style="zoom:80%;" />
 
@@ -43,12 +43,12 @@ sudo apt-get install g++ build-essential -y
 make
 ```
 
-出现下图所示界面我们创建的工程就编译完成了，同时会在build目录下生成retrosoc_fw.elf、retrosoc_fw.hex、retrosoc_fw.bin文件，**<font color='red'>使用bin文件进行烧录</font>**即可。
+出现下图所示界面我们创建的工程就编译完成了，同时会在build目录下生成retrosoc_fw.elf、retrosoc_fw.hex、retrosoc_fw.bin文件，**<font>使用bin文件进行烧录</font>**即可。
 
 <img src="../../../res/img/sdk/quickstart/Create_sample_project5.png" alt="12" style="zoom:80%;" />
 
 ### 2.烧录进板卡
-(1) 编译完成后，打开下图路径找到**<font color='red'>retrosoc_fw.bin</font>**文件
+(1) 编译完成后，打开下图路径找到**<font>retrosoc_fw.bin</font>**文件
 
 <img src="../../../res/img/sdk/quickstart/Burned_into_the_board_card1.png" alt="1" style="zoom:75%;" />
 
@@ -56,14 +56,14 @@ make
 
 <img src="../../../res/img/sdk/quickstart/Burned_into_the_board_card2.jpg" alt="2" style="zoom:80%;" />
 
-(3) 将retrosoc_fw.bin文件**<font color='red'>复制</font>**到该文件夹下
+(3) 将retrosoc_fw.bin文件复制到该文件夹下
 
 <img src="../../../res/img/sdk/quickstart/Burned_into_the_board_card3.png" alt="3" style="zoom:90%;" />
 
-(4) 然后**<font color='red'>将烧录器的开关播到另一侧</font>**，再把**<font color='red'>typec线连接到板卡上</font>**（拨完如图示）
+(4) 然后将烧录器的开关播到另一侧，再把typec线连接到板卡上（拨完如图示）
 
 <img src="../../../res/img/sdk/quickstart/Burned_into_the_board_card4.jpg" alt="4" style="zoom: 50%;" />
 
-(5) 打开串口调试助手，波特率设置为**<font color='blue'>115200</font>**，**<font color='blue'>按下板卡上的复位键</font>**，看到下图界面，我们的第一个工程的全部流程就结束了。
+(5) 打开串口调试助手，波特率设置为**<font>115200</font>**，按下板卡上的复位键，看到下图界面，我们的第一个工程的全部流程就结束了。
 
 <img src="../../../res/img/sdk/quickstart/Burned_into_the_board_card5.png" alt="5" style="zoom:67%;" />
