@@ -39,6 +39,7 @@ nav:
     - 星空C:
       - page/brd/starry-sky-c/index.md
       - v1.0: page/brd/starry-sky-c/v1.0.md
+      - v2.0: page/brd/starry-sky-c/v2.0.md
   - ECOS-SDK: 
     - page/sdk/index.md
     - 环境准备: page/sdk/env.md
