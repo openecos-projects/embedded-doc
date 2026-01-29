@@ -116,7 +116,7 @@ GPIO驱动的总入口，负责解析配置结构体中的信息，并一次性�
 
 (2) 参数解析
 
-* 参数：const gpio_config_t* config
+* 参数：const gpio_config_t* configq
 
 * 含义：指向配置结构体的指针
 
