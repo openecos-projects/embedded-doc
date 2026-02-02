@@ -48,5 +48,6 @@ nav:
     - API文档:
       - GPIO: page/sdk/api/gpio.md
       - QSPI: page/sdk/api/qspi.md
+      - PWM: page/sdk/api/pwm.md
     - 示例工程:
       - Hello World: page/sdk/examples/hello-world.md
