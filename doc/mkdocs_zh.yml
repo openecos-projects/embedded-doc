@@ -50,5 +50,6 @@ nav:
       - QSPI: page/sdk/api/qspi.md
       - PWM: page/sdk/api/pwm.md
       - HP_UART: page/sdk/api/hp_uart.md
+      - I2C: page/sdk/api/i2c.md
     - 示例工程:
       - Hello World: page/sdk/examples/hello-world.md
