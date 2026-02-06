@@ -51,5 +51,6 @@ nav:
       - PWM: page/sdk/api/pwm.md
       - HP_UART: page/sdk/api/hp_uart.md
       - I2C: page/sdk/api/i2c.md
+      - SYS_UART: page/sdk/api/sys_uart.md
     - 示例工程:
       - Hello World: page/sdk/examples/hello-world.md
