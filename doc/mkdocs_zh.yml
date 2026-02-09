@@ -52,5 +52,8 @@ nav:
       - HP_UART: page/sdk/api/hp_uart.md
       - I2C: page/sdk/api/i2c.md
       - SYS_UART: page/sdk/api/sys_uart.md
+      - TIMER: page/sdk/api/timer.md
+      - LIBC: page/sdk/api/libc.md
+      - LIBGCC: page/sdk/api/libgcc.md
     - 示例工程:
       - Hello World: page/sdk/examples/hello-world.md
