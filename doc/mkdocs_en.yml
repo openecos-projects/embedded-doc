@@ -31,4 +31,7 @@ extra:
   alternate:
 
 nav:
-  - "Home": index.md
+  - Home: index.md
+  - Boards:
+    - page/brd/index.md
+  # - SDK:
