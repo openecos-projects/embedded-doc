@@ -27,5 +27,8 @@ theme:
       name: Switch to light mode
   language: en
 
+extra:
+  alternate:
+
 nav:
   - "Home": index.md
