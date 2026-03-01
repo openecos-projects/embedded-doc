@@ -27,6 +27,9 @@ theme:
       name: 切换到浅色模式
   language: zh
 
+extra:
+  alternate:
+
 nav:
   - 项目主页: index.md
   - 板卡百科:
