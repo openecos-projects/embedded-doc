@@ -4,6 +4,7 @@ docs_dir: src/zh
 site_dir: site
 
 site_name: ECOS嵌入式
+site_url: !ENV READTHEDOCS_CANONICAL_URL
 
 edit_uri: edit/main/doc/src/zh
 
@@ -41,7 +42,7 @@ nav:
       - v1.0: page/brd/starry-sky-c/v1.0.md
       - v2.0-Pico: page/brd/starry-sky-c/v2.0-Pico.md
       - v2.0-Pi: page/brd/starry-sky-c/v2.0-Pi.md
-  - ECOS-SDK: 
+  - ECOS-SDK:
     - page/sdk/index.md
     - 环境准备: page/sdk/env.md
     - 快速上手: page/sdk/quickstart.md
