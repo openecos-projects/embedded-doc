@@ -4,6 +4,7 @@ docs_dir: src/en
 site_dir: site/en
 
 site_name: ECOS Embedded
+site_url: !ENV READTHEDOCS_CANONICAL_URL
 
 edit_uri: edit/main/doc/src/en
 
@@ -25,6 +26,9 @@ theme:
       icon: material/brightness-4
       name: Switch to light mode
   language: en
+
+extra:
+  alternate:
 
 nav:
   - "Home": index.md
