@@ -1,17 +1,15 @@
-# MkDocs
+# Project
 .venv/
-site/
-
-# Repo
 res/
 tpl/
-
-# Link
 res
 
-# Node
+# Node.js
 node_modules
 package*.json
 
-# Gen
+# MkDocs
+site/
+
+# ReadtheDocs
 html/
