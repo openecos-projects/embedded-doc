@@ -4,10 +4,11 @@ build:
   os: "ubuntu-22.04"
   tools:
     python: "3.10"
+    nodejs: "22"
   apt_packages:
     - pngquant
     - jpegoptim
   jobs:
     build:
       html:
-        - cd doc && MKDOCS_ENV=deploy make setup && make build-rtd
+        - cd doc && MKDOCS_ENV=deploy make setup && make gen-css && make build-doc
