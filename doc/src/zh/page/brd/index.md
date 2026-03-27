@@ -333,7 +333,7 @@ table.ecos-product-table tr:hover {
               <a href="starry-sky-l/v1.2" class="ecos-td-name">星空L v1.2</a>
             </div>
           </td>
-          <td>Flash: 16MB x2<br><span style="color:var(--ecos-text-muted);font-size:0.85em;">(SoC+FPGA)</span></td>
+          <td>Flash: 16MB</td>
           <td>SoC底板 + <br>ZYNQ 7010核心板</td>
           <td>VGA, PS/2, Audio, PMOD, UART, TF Card</td>
           <td class="ecos-td-desc">搭载三期第一批4个SoC的一生一芯官方板卡。入门级开发板，适合RISC-V架构学习。</td>
@@ -347,7 +347,7 @@ table.ecos-product-table tr:hover {
               <a href="starry-sky-l/v1.3" class="ecos-td-name">星空L v1.3</a>
             </div>
           </td>
-          <td>Flash: 16MB<br><span style="color:var(--ecos-text-muted);font-size:0.85em;">(SoC/FPGA共享?)</span></td>
+          <td>Flash: 16MB</td>
           <td>SoC底板 + <br>ZYNQ 7010核心板</td>
           <td>VGA, PS/2, Audio, PMOD, UART, TF Card</td>
           <td class="ecos-td-desc">相比v1.2修正了部分已知问题，继续支持一生一芯SoC评估，性能更加稳定。</td>
@@ -361,7 +361,7 @@ table.ecos-product-table tr:hover {
               <a href="starry-sky-l/v2.1" class="ecos-td-name">星空L v2.1</a>
             </div>
           </td>
-          <td>RAM: 32MB<br>Flash: 16MB<br><span style="color:var(--ecos-text-muted);font-size:0.85em;">(LPSDRAM)</span></td>
+          <td>Flash: 16MB<br></td>
           <td>SoC底板 + <br>ZYNQ 7020核心板</td>
           <td>1.14" LCD, VGA, PS/2, Audio, UART, TF</td>
           <td class="ecos-td-desc">配备TFT-LCD屏幕，增强交互体验。板载外设丰富，支持更多复杂实验。</td>
@@ -375,8 +375,8 @@ table.ecos-product-table tr:hover {
               <a href="starry-sky-l/v3.0" class="ecos-td-name">星空L v3.0</a>
             </div>
           </td>
-          <td>Flash: 16MB<br>SD Card Slot</td>
-          <td>SoC主板 + <br>MZ7X484核心板</td>
+          <td>Flash: 16MB</td>
+          <td>SoC主板 + <br>ZYNQ 7020核心板</td>
           <td>1.44" LCD, UART, I2C, Type-C, Chiplink</td>
           <td class="ecos-td-desc">采用SoC主板+FPGA核心板贴装设计，支持Chiplink高速互联。高性能计算理想平台。</td>
         </tr>
@@ -431,7 +431,7 @@ table.ecos-product-table tr:hover {
           <td>SRAM: 128KB<br>PSRAM: 8MB<br>Flash: 16MB</td>
           <td>N/A</td>
           <td>UART, SPI, I2C, GPIO, PWM, LCD</td>
-          <td class="ecos-td-desc">基于110nm开源SoC芯片板卡，集成PicoRV32核。展示了开源芯片从设计到流片的完整流程。</td>
+          <td class="ecos-td-desc">基于110nm开源retroSoC芯片板卡，集成PicoRV32核。展示了开源芯片从设计到流片的完整流程。</td>
         </tr>
         <tr>
           <td>
@@ -445,7 +445,7 @@ table.ecos-product-table tr:hover {
           <td>SRAM: 128KB<br>PSRAM: 8MB<br>Flash: 16MB</td>
           <td>N/A</td>
           <td>UART, SPI, I2C, GPIO, PWM, PS2, LCD</td>
-          <td class="ecos-td-desc">基于开源ASIC定制框架retroSoC，采用树莓派外形因子。兼容树莓派扩展板，生态资源丰富。</td>
+          <td class="ecos-td-desc">基于开源retroSoC，直接扇出所有引脚，板卡小巧，适用于集成开发。</td>
         </tr>
         <tr>
           <td>
@@ -459,7 +459,7 @@ table.ecos-product-table tr:hover {
           <td>SRAM: 128KB<br>PSRAM: 8MB<br>Flash: 16MB</td>
           <td>N/A</td>
           <td>UART, SPI, I2C, GPIO, PWM</td>
-          <td class="ecos-td-desc">基于开源ASIC定制框架retroSoC，采用Pico外形因子。小巧精致，适合嵌入式控制和便携设备开发。</td>
+          <td class="ecos-td-desc">基于开源retroSoC，板载继承丰富外设，适合学习开发使用。</td>
         </tr>
       </tbody>
     </table>
