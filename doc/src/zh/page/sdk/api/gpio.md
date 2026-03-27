@@ -1,4 +1,4 @@
-# GPIO API111
+# GPIO API
 
 ## 核心类型定义 (GPIO Types)
 
