@@ -11,4 +11,4 @@ build:
   jobs:
     build:
       html:
-        - cd doc && MKDOCS_ENV=deploy make setup && make gen-css && make build-doc MKDOCS_LANG=en
+        - cd doc && MKDOCS_ENV=deploy make setup && make gen-doc && make build-doc MKDOCS_LANG=en

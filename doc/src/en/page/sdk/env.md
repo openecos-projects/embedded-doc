@@ -6,45 +6,45 @@
 
 * Find the Windows Update settings in the Settings menu.
 
-<img src="../../../res/img/sdk/env/env_windows_setting.png" alt="1" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/env_windows_setting.webp" alt="1" style="zoom:80%;" />
 
 * Find the "For developers" settings, then turn on "Developer Mode".
 
-<img src="../../../res/img/sdk/env/env_windows_setting1.png" alt="2" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/env_windows_setting1.webp" alt="2" style="zoom:80%;" />
 
 ### 2. Enable the Windows Subsystem for Linux.
 
 * Open the Control Panel, then find "Programs and Features".
 
-<img src="../../../res/img/sdk/env/enable Linux1.png" alt="3" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/enable Linux1.webp" alt="3" style="zoom:80%;" />
 
 * Click on "Turn Windows features on or off".
 
-<img src="../../../res/img/sdk/env/enable Linux2.png" alt="4" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/enable Linux2.webp" alt="4" style="zoom:80%;" />
 
 * Scroll down, check the "Windows Subsystem for Linux" option, and restart your computer immediately after making the change。
 
-<img src="../../../res/img/sdk/env/enable Linux3.png" alt="5" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/enable Linux3.webp" alt="5" style="zoom:80%;" />
 
-<img src="../../../res/img/sdk/env/enable Linux4.png" alt="6" style="zoom: 67%;" />
+<img src="../../../res/img/sdk/env/enable Linux4.webp" alt="6" style="zoom: 67%;" />
 
 ### 3. Install the Linux Subsystem.
 
 * Search for "Ubuntu" in the Microsoft Store.
 
-<img src="../../../res/img/sdk/env/install Linux1.png" alt="7" style="zoom: 67%;" />
+<img src="../../../res/img/sdk/env/install Linux1.webp" alt="7" style="zoom: 67%;" />
 
 * Install and launch Ubuntu 24.04.1.
 
-<img src="../../../res/img/sdk/env/install Linux2.png" alt="8" style="zoom:67%;" />
+<img src="../../../res/img/sdk/env/install Linux2.webp" alt="8" style="zoom:67%;" />
 
 * After launching, create an account and enter a username. Note that the username cannot contain uppercase letters.
 
-<img src="../../../res/img/sdk/env/install Linux3.png" alt="8" style="zoom:67%;" />
+<img src="../../../res/img/sdk/env/install Linux3.webp" alt="8" style="zoom:67%;" />
 
 * Set the account password. Note that in Linux, there are no asterisk (*) prompts when typing the password; just type it blindly and confirm it.
 
-<img src="../../../res/img/sdk/env/enable Linux4.png" alt="10" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/enable Linux4.webp" alt="10" style="zoom:80%;" />
 
 
 
@@ -73,7 +73,7 @@ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 
 When the following page content appears, the SSH key has been successfully generated.
 
-<img src="../../../res/img/sdk/env/Installing Git on Ubuntu1.png" alt="1" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/Installing Git on Ubuntu1.webp" alt="1" style="zoom:80%;" />
 
 * Add the SSH key to the SSH agent:
 
@@ -90,13 +90,13 @@ ssh-add ~/.ssh/id_rsa
 cat ~/.ssh/id_rsa.pub
 ```
 
-<img src="../../../res/img/sdk/env/Installing Git on Ubuntu2.png" alt="2" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/Installing Git on Ubuntu2.webp" alt="2" style="zoom:80%;" />
 
 ​	Log in to your GitHub account, then go to Settings > SSH and GPG keys > New SSH key.
 
 ​	Paste the public key into the Key field, provide a title, and then click Add SSH key.
 
-<img src="../../../res/img/sdk/env/Installing Git on Ubuntu3.png" alt="3" style="zoom: 67%;" />
+<img src="../../../res/img/sdk/env/Installing Git on Ubuntu3.webp" alt="3" style="zoom: 67%;" />
 
 * Test the connection by entering the following command to confirm if the configuration was successful.
 
@@ -106,7 +106,7 @@ ssh -T git@github.com
 
 ​	If the following message appears, the connection is successful.
 
-<img src="../../../res/img/sdk/env/Installing Git on Ubuntu4.png" alt="3" style="zoom: 67%;" />
+<img src="../../../res/img/sdk/env/Installing Git on Ubuntu4.webp" alt="3" style="zoom: 67%;" />
 
 * Once Git and the SSH connection are configured, you can start cloning the repository from GitHub.
 
@@ -118,7 +118,7 @@ git clone git@github.com:username/repository.git
 
 ​	Once the following interface appears, you have successfully completed all the steps for configuring Git to connect to GitHub on Ubuntu 24.04.
 
-<img src="../../../res/img/sdk/env/Installing Git on Ubuntu5.png" alt="3" style="zoom: 67%;" />
+<img src="../../../res/img/sdk/env/Installing Git on Ubuntu5.webp" alt="3" style="zoom: 67%;" />
 
 ### 2. begin the SDK installation.
 
@@ -132,7 +132,7 @@ chmod +x install.sh
 
 The following error occurs because the Ubuntu system is too "clean" and lacks the basic tools (compiler and decompression tools) required for compiling code.
 
-<img src="../../../res/img/sdk/env/Installing Git on Ubuntu6.png" alt="6" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/Installing Git on Ubuntu6.webp" alt="6" style="zoom:80%;" />
 
 Enter the following command. Note that when executing a sudo command, you will be prompted for a password. No characters will be displayed on the screen while typing; just press Enter after typing it.
 
@@ -149,7 +149,7 @@ sudo apt-get install gcc make unzip -y
 
 When the following interface appears, you can proceed to the next step.
 
-<img src="../../../res/img/sdk/env/Installing Git on Ubuntu7.png" alt="7" style="zoom: 80%;" />
+<img src="../../../res/img/sdk/env/Installing Git on Ubuntu7.webp" alt="7" style="zoom: 80%;" />
 
 * Run the following command to update the environment variables.
 
@@ -163,29 +163,29 @@ Connecting Ubuntu within VS Code allows you to transition from the "painful blac
 
 ### 1. Download the Remote Explorer and WSL extensions.
 
-<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code1.png" alt="1" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code1.webp" alt="1" style="zoom:80%;" />
 
 Click the blue icon in the bottom-left corner of VS Code (the small square composed of two arrows). 
 
-<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code2.png" alt="2" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code2.webp" alt="2" style="zoom:80%;" />
 
 In the menu that appears at the top, select "Connect to WSL".
 
-<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code3.png" alt="3" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code3.webp" alt="3" style="zoom:80%;" />
 
 The system will automatically establish the connection. Once connected successfully, the blue area in the bottom-left corner of VS Code will display "WSL: Ubuntu-24.04".
 
-<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code4.png" alt="4"  />
+<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code4.webp" alt="4"  />
 
 ### 2. Configure the VS Code workspace path.
 
 * Click the first icon in the left sidebar of VS Code (Explorer / File Explorer).
 
-<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code5.png" alt="5" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code5.webp" alt="5" style="zoom:80%;" />
 
 * Click "Open Folder"
 
-<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code6.png" alt="6" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code6.webp" alt="6" style="zoom:80%;" />
 
 * In the input box that appears in the center, you will see the path /home/happy/. Please click or enter: /home/happy. The left-hand list in VS Code will then display your project structure. main.c is where we will write the code next, and the build/ folder contains the compiled .bin files.
 

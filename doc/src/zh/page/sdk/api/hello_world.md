@@ -83,7 +83,7 @@ void main(void){
 
 #### 3.2 程序运行流程图
 
-![board](../../../res/img/sdk/quickstart/hello_world.png)
+![board](../../../res/img/sdk/quickstart/hello_world.webp)
 
 ### 4. 预期展示效果
 

@@ -6,45 +6,45 @@
 
 * 在设置中查找Windows更新设置
 
-<img src="../../../res/img/sdk/env/env_windows_setting.png" alt="1" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/env_windows_setting.webp" alt="1" style="zoom:80%;" />
 
 * 找到开发者选项，开启“开发人员模式”
 
-<img src="../../../res/img/sdk/env/env_windows_setting1.png" alt="2" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/env_windows_setting1.webp" alt="2" style="zoom:80%;" />
 
 ### 2. 启用Linux子系统
 
 * 打开控制面板，找到"程序与功能"
 
-<img src="../../../res/img/sdk/env/enable Linux1.png" alt="3" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/enable Linux1.webp" alt="3" style="zoom:80%;" />
 
 * 点击“启用或关闭Windows功能”
 
-<img src="../../../res/img/sdk/env/enable Linux2.png" alt="4" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/enable Linux2.webp" alt="4" style="zoom:80%;" />
 
 * 往下滑勾选“适用于Linux的Windows”子系统选项，更改完立即**<font>重启电脑</font>**。
 
-<img src="../../../res/img/sdk/env/enable Linux3.png" alt="5" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/enable Linux3.webp" alt="5" style="zoom:80%;" />
 
-<img src="../../../res/img/sdk/env/enable Linux4.png" alt="6" style="zoom: 67%;" />
+<img src="../../../res/img/sdk/env/enable Linux4.webp" alt="6" style="zoom: 67%;" />
 
 ### 3. 安装Linux子系统
 
 * 在Microsoft Store中搜索“ubuntu”
 
-<img src="../../../res/img/sdk/env/install Linux1.png" alt="7" style="zoom: 67%;" />
+<img src="../../../res/img/sdk/env/install Linux1.webp" alt="7" style="zoom: 67%;" />
 
 * 安装并启动Ubuntu 24.04.1
 
-<img src="../../../res/img/sdk/env/install Linux2.png" alt="8" style="zoom:67%;" />
+<img src="../../../res/img/sdk/env/install Linux2.webp" alt="8" style="zoom:67%;" />
 
 * 启动后创建账号，填写用户名，注意用户名**<font>不能有大写字母</font>**。
 
-<img src="../../../res/img/sdk/env/install Linux3.png" alt="8" style="zoom:67%;" />
+<img src="../../../res/img/sdk/env/install Linux3.webp" alt="8" style="zoom:67%;" />
 
 * 设账号密码，Linux的密码输入没有*号提示，盲打后确认即可。
 
-<img src="../../../res/img/sdk/env/enable Linux4.png" alt="10" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/enable Linux4.webp" alt="10" style="zoom:80%;" />
 
 
 
@@ -74,7 +74,7 @@ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 
 ​	出现以下页面内容，生成SSH密钥成功。
 
-<img src="../../../res/img/sdk/env/Installing Git on Ubuntu1.png" alt="1" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/Installing Git on Ubuntu1.webp" alt="1" style="zoom:80%;" />
 
 * 添加SSH密钥到SSH代理：
 
@@ -91,13 +91,13 @@ ssh-add ~/.ssh/id_rsa
 cat ~/.ssh/id_rsa.pub
 ```
 
-<img src="../../../res/img/sdk/env/Installing Git on Ubuntu2.png" alt="2" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/Installing Git on Ubuntu2.webp" alt="2" style="zoom:80%;" />
 
 ​	登录github账户，进入 Settings > SSH and GPG keys > New SSH key
 
 ​	粘贴公钥到Key字段，设置一个标题，然后点击 Add SSH key
 
-<img src="../../../res/img/sdk/env/Installing Git on Ubuntu3.png" alt="3" style="zoom: 67%;" />
+<img src="../../../res/img/sdk/env/Installing Git on Ubuntu3.webp" alt="3" style="zoom: 67%;" />
 
 * 测试连接，输入以下代码确认是否配置成功
 
@@ -107,7 +107,7 @@ ssh -T git@github.com
 
 ​	弹出如下消息，则连接成功。
 
-<img src="../../../res/img/sdk/env/Installing Git on Ubuntu4.png" alt="3" style="zoom: 67%;" />
+<img src="../../../res/img/sdk/env/Installing Git on Ubuntu4.webp" alt="3" style="zoom: 67%;" />
 
 * 配置好git和SSH的连接就可以开始克隆github上的仓库：
 
@@ -119,7 +119,7 @@ git clone git@github.com:username/repository.git
 
 出现如下界面，就成功完成了在Ubuntu 24.04上配置git连接github的全部步骤。
 
-<img src="../../../res/img/sdk/env/Installing Git on Ubuntu5.png" alt="3" style="zoom: 67%;" />
+<img src="../../../res/img/sdk/env/Installing Git on Ubuntu5.webp" alt="3" style="zoom: 67%;" />
 
 ### 2. 下面开始进入SDK的安装
 
@@ -133,7 +133,7 @@ chmod +x install.sh
 
 ​	出现以下报错，是因为 Ubuntu 系统太“干净”了，缺少编译代码必须的基础工具（编译器和解压缩工具）。
 
-<img src="../../../res/img/sdk/env/Installing Git on Ubuntu6.png" alt="6" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/Installing Git on Ubuntu6.webp" alt="6" style="zoom:80%;" />
 
 ​	输入以下指令，注意执行 sudo 命令时会要求输入密码，输入密码时屏幕不会显示任何字符，输完直接按回车即可。
 
@@ -150,7 +150,7 @@ sudo apt-get install gcc make unzip -y
 
 ​	出现以下界面，就可以往下进行
 
-<img src="../../../res/img/sdk/env/Installing Git on Ubuntu7.png" alt="7" style="zoom: 80%;" />
+<img src="../../../res/img/sdk/env/Installing Git on Ubuntu7.webp" alt="7" style="zoom: 80%;" />
 
 * 执行以下代码来**<font>更新一下环境变量</font>**
 
@@ -165,29 +165,29 @@ source ~/.bashrc
 
 ### 1. 下载 Remote Explorer 与 WSL扩展
 
-<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code1.png" alt="1" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code1.webp" alt="1" style="zoom:80%;" />
 
 ​	点击 VS Code 左下角的蓝色图标（也就是那个由两个箭头组成的小方块**<font color='blue'>< ></font>**）。
 
-<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code2.png" alt="2" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code2.webp" alt="2" style="zoom:80%;" />
 
 ​	在顶部弹出的菜单中选择"Connect to WSL"
 
-<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code3.png" alt="3" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code3.webp" alt="3" style="zoom:80%;" />
 
 ​	系统会自动建立连接。连接成功后，VS Code 左下角的蓝色区域会显示 WSL: Ubuntu-24.04。
 
-<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code4.png" alt="4"  />
+<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code4.webp" alt="4"  />
 
 ### 2. 配置 Vs code 工作区路径
 
 * 点击 VS Code 左侧侧边栏第一个图标（Explorer / 文件管理器）。
 
-<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code5.png" alt="5" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code5.webp" alt="5" style="zoom:80%;" />
 
 * 点击 Open Folder（打开文件夹）
 
-<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code6.png" alt="6" style="zoom:80%;" />
+<img src="../../../res/img/sdk/env/Connect Ubuntu with VS Code6.webp" alt="6" style="zoom:80%;" />
 
 * 在中间弹出的输入框中，你会看到 /home/happy/ 路径。请点击或输入：/home/happy, VS Code 的左侧列表就会显示出你的工程结构, main.c就是我们接下来要写代码的地方, build/里存放着编译出来的 .bin 文件。
 

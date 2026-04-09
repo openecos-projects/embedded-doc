@@ -2,7 +2,7 @@
 
 REPO_RES_DIR := res
 REPO_TPL_DIR := tpl
-ifeq ($(MKDOCS_ENV),deploy)
+ifeq ($(MKDOCS_ENV), deploy)
     REPO_PREFIX := https://github.com/
 else
     REPO_PREFIX := git@github.com:
@@ -15,29 +15,34 @@ LINK_TARGET := src/zh src/en
 .PHONY: setup
 
 setup:
-	@echo "Checking and setting up directories..."
-	@if [ ! -d "$(REPO_RES_DIR)" ]; then \
-		echo "Cloning res repository..."; \
-		git clone $(REPO_RES_URL) $(REPO_RES_DIR); \
-	else \
-		echo "$(REPO_RES_DIR) already exists, updating..."; \
-		cd $(REPO_RES_DIR) && git pull; \
+	@echo "[setup] checking and setting up dir..."
+	@if [ ! -d "$(REPO_RES_DIR)" ]; then                                \
+		echo "[setup] cloning res repository...";                       \
+		git clone $(REPO_RES_URL) $(REPO_RES_DIR);                      \
+	else                                                                \
+		echo "[setup] $(REPO_RES_DIR) dir already exists, updating..."; \
+		cd $(REPO_RES_DIR) && git pull;                                 \
 	fi
 
-	@if [ ! -d "$(REPO_TPL_DIR)" ]; then \
-		echo "Cloning tpl repository..."; \
-		git clone $(REPO_TPL_URL) $(REPO_TPL_DIR); \
-	else \
-		echo "$(REPO_TPL_DIR) already exists, updating..."; \
-		cd $(REPO_TPL_DIR) && git pull; \
+	@if [ ! -d "$(REPO_TPL_DIR)" ]; then                                \
+		echo "[setup] cloning tpl repository...";                       \
+		git clone $(REPO_TPL_URL) $(REPO_TPL_DIR);                      \
+	else                                                                \
+		echo "[setup] $(REPO_TPL_DIR) dir already exists, updating..."; \
+		cd $(REPO_TPL_DIR) && git pull;                                 \
 	fi
 
-	@for target in $(LINK_TARGET); do \
-		if [ ! -e "$$target/res" ]; then \
-			echo "Creating symlink: $$target/res -> $(REPO_RES_DIR)"; \
-			cd $$target && ln -sf ../../res ./ && cd -; \
-		else \
-			echo "Symlink or file already exists: $$target"; \
-		fi; \
+	@for target in $(LINK_TARGET); do                                          \
+		if [ ! -e "$$target/res" ]; then                                       \
+			echo "[setup] creating softlink: $$target/res -> $(REPO_RES_DIR)"; \
+			cd $$target && mkdir -p res &&                                     \
+			find ../../res -mindepth 1 -maxdepth 1 -type d ! -name ".git"      \
+				-exec sh -c                                                    \
+				'ln -sfn "$$(realpath --relative-to=res "$$1")" res/'          \
+				_ {} \; &&                                                     \
+			cd -;                                                              \
+		else                                                                   \
+			echo "[setup] softlink already exists: $$target/res";              \
+		fi;                                                                    \
 	done
-	@echo "Setup completed."
+	@echo "[setup] done!"

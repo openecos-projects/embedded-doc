@@ -15,7 +15,7 @@ make menuconfig
 
 ​	若有以下报错，是因为 Ubuntu 系统缺编译配置菜单（menuconfig）所需的工具。
 
-<img src="../../../res/img/sdk/quickstart/Create_sample_project1.png" alt="1" style="zoom:80%;" />
+<img src="../../../res/img/sdk/quickstart/Create_sample_project1.webp" alt="1" style="zoom:80%;" />
 
 * 在终端输入以下命令，安装必要的编译工具：
 
@@ -28,15 +28,15 @@ sudo apt-get install g++ build-essential -y
 
 * 安装完成后，再次回到 hello 目录（确保你在 ~/embedded-sdk/hello 路径下）执行make menuconfig，此时出现一个蓝色的图形化菜单界面：
 
-<img src="../../../res/img/sdk/quickstart/Create_sample_project2.png" alt="9" style="zoom:80%;" />
+<img src="../../../res/img/sdk/quickstart/Create_sample_project2.webp" alt="9" style="zoom:80%;" />
 
 * 直接按Enter进入Target Hareware Configuration，再回车选择板卡**<font >C2</font>**
 
-<img src="../../../res/img/sdk/quickstart/Create_sample_project3.png" alt="10" style="zoom:80%;" />
+<img src="../../../res/img/sdk/quickstart/Create_sample_project3.webp" alt="10" style="zoom:80%;" />
 
 ​	再进入Memory Region Selection选择**<font>SRAM</font>**，保存
 
-<img src="../../../res/img/sdk/quickstart/Create_sample_project4.png" alt="11" style="zoom:80%;" />
+<img src="../../../res/img/sdk/quickstart/Create_sample_project4.webp" alt="11" style="zoom:80%;" />
 
 * 配置界面成功退出后，执行最后一步：
 
@@ -46,26 +46,26 @@ make
 
 ​	出现下图所示界面我们创建的工程就编译完成了，同时会在build目录下生成retrosoc_fw.elf、retrosoc_fw.hex、retrosoc_fw.bin文件，**<font>使用bin文件进行烧录</font>**即可。
 
-<img src="../../../res/img/sdk/quickstart/Create_sample_project5.png" alt="12" style="zoom:80%;" />
+<img src="../../../res/img/sdk/quickstart/Create_sample_project5.webp" alt="12" style="zoom:80%;" />
 
 ### 2.烧录进板卡
 
 * 编译完成后，打开下图路径找到**<font>retrosoc_fw.bin</font>**文件。
 
-	<img src="../../../res/img/sdk/quickstart/Burned_into_the_board_card1.png" alt="1" style="zoom:75%;" />
+	<img src="../../../res/img/sdk/quickstart/Burned_into_the_board_card1.webp" alt="1" style="zoom:75%;" />
 
 * 将烧录器连接到板卡，并将烧录器的另一头通过USB连接到电脑，会出现一个新的文件夹。
 
-	<img src="../../../res/img/sdk/quickstart/Burned_into_the_board_card2.jpg" alt="2" style="zoom:80%;" />
+	<img src="../../../res/img/sdk/quickstart/Burned_into_the_board_card2.webp" alt="2" style="zoom:80%;" />
 
 * 将retrosoc_fw.bin文件复制到该文件夹下。
 
-	<img src="../../../res/img/sdk/quickstart/Burned_into_the_board_card3.png" alt="3" style="zoom:90%;" />
+	<img src="../../../res/img/sdk/quickstart/Burned_into_the_board_card3.webp" alt="3" style="zoom:90%;" />
 
 * 然后将烧录器的开关播到另一侧，再把typec线连接到板卡上（拨完如图示）。
 
-	<img src="../../../res/img/sdk/quickstart/Burned_into_the_board_card4.jpg" alt="4" style="zoom: 50%;" />
+	<img src="../../../res/img/sdk/quickstart/Burned_into_the_board_card4.webp" alt="4" style="zoom: 50%;" />
 
 * 打开串口调试助手，波特率设置为**<font>115200</font>**，按下板卡上的复位键，看到下图界面，我们的第一个工程的全部流程就结束了。
 
-	<img src="../../../res/img/sdk/quickstart/Burned_into_the_board_card5.png" alt="5" style="zoom:67%;" />
+	<img src="../../../res/img/sdk/quickstart/Burned_into_the_board_card5.webp" alt="5" style="zoom:67%;" />
