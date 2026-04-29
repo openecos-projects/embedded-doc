@@ -437,7 +437,7 @@ table.ecos-product-table tr:hover {
           <td>
             <div class="ecos-td-product">
               <a href="starry-sky-c/v2.0_pi" class="ecos-td-img-link">
-                <img src="../../res/img/brd/starry-sky-c/v2.0/board.webp" class="ecos-td-img" alt="C v2.0 Pi">
+                <img src="../../res/img/brd/starry-sky-c/v2.0/board1.webp" class="ecos-td-img" alt="C v2.0 Pi">
               </a>
               <a href="starry-sky-c/v2.0_pi" class="ecos-td-name">星空C v2.0 Pi</a>
             </div>
@@ -451,7 +451,7 @@ table.ecos-product-table tr:hover {
           <td>
             <div class="ecos-td-product">
               <a href="starry-sky-c/v2.0_pico" class="ecos-td-img-link">
-                <img src="../../res/img/brd/starry-sky-c/v2.0/board1.webp" class="ecos-td-img" alt="C v2.0 Pico">
+                <img src="../../res/img/brd/starry-sky-c/v2.0/board.webp" class="ecos-td-img" alt="C v2.0 Pico">
               </a>
               <a href="starry-sky-c/v2.0_pico" class="ecos-td-name">星空C v2.0 Pico</a>
             </div>
