@@ -51,6 +51,7 @@ nav:
     - 快速上手: page/sdk/quickstart.md
     - API文档:
       - GPIO: page/sdk/api/gpio.md
+      - GPIO_v2: page/sdk/api/gpio_v2.md
       - QSPI: page/sdk/api/qspi.md
       - PWM: page/sdk/api/pwm.md
       - HP_UART: page/sdk/api/hp_uart.md
