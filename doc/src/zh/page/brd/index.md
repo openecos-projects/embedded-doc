@@ -378,21 +378,21 @@ table.ecos-product-table tr:hover {
           <td>Flash: 16MB</td>
           <td>SoC主板 + <br>ZYNQ 7020核心板</td>
           <td>1.44" LCD, UART, I2C, Type-C, Chiplink</td>
-          <td class="ecos-td-desc">采用SoC主板+FPGA核心板贴装设计，支持Chiplink高速互联。高性能计算理想平台。</td>
+          <td class="ecos-td-desc">一生一芯五期一批学员流片芯片开发板卡</td>
         </tr>
         <tr>
           <td>
             <div class="ecos-td-product">
               <a href="starry-sky-l/v3.1" class="ecos-td-img-link">
-                <img src="../../res/img/brd/starry-sky-l/v3.1/brd_func_top.webp" class="ecos-td-img" alt="L v3.1">
+                <img src="../../res/img/brd/starry-sky-l/v3.1/brd_pcb_top.webp" class="ecos-td-img" alt="L v3.1">
               </a>
               <a href="starry-sky-l/v3.1" class="ecos-td-name">星空L v3.1</a>
             </div>
           </td>
           <td>Flash: 16MB</td>
           <td>SoC主板 + <br>ZYNQ 7020核心板</td>
-          <td>1.44" LCD, UART, I2C, Type-C, Chiplink</td>
-          <td class="ecos-td-desc">采用SoC主板+FPGA核心板贴装设计，支持Chiplink高速互联。高性能计算理想平台。</td>
+          <td>1.44" LCD, UART, I2C, Type-C, Chiplink，WiFi</td>
+          <td class="ecos-td-desc">一生一芯五期二批学员流片芯片开发板卡</td>
         </tr>
       </tbody>
     </table>
