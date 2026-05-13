@@ -55,6 +55,7 @@ nav:
       - QSPI: page/sdk/api/qspi.md
       - PWM: page/sdk/api/pwm.md
       - HP_UART: page/sdk/api/hp_uart.md
+      - HP_UART_v2: page/sdk/api/hp_uart_v2.md
       - I2C: page/sdk/api/i2c.md
       - SYS_UART: page/sdk/api/sys_uart.md
       - TIMER: page/sdk/api/timer.md
