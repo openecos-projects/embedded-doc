@@ -46,20 +46,26 @@ nav:
       - v1.0: page/brd/starry-sky-c/v1.0.md
       - v2.0 Pico: page/brd/starry-sky-c/v2.0_pico.md
       - v2.0 Pi: page/brd/starry-sky-c/v2.0_pi.md
-  - 开发工具箱:
-    - 环境准备: page/sdk/env.md
-    - 快速上手: page/sdk/quickstart.md
-    - API文档:
-      - GPIO: page/sdk/api/gpio.md
-      - GPIO_v2: page/sdk/api/gpio_v2.md
-      - QSPI: page/sdk/api/qspi.md
-      - PWM: page/sdk/api/pwm.md
-      - HP_UART: page/sdk/api/hp_uart.md
-      - HP_UART_v2: page/sdk/api/hp_uart_v2.md
-      - I2C: page/sdk/api/i2c.md
-      - SYS_UART: page/sdk/api/sys_uart.md
-      - TIMER: page/sdk/api/timer.md
-      - LIBC: page/sdk/api/libc.md
-      - LIBGCC: page/sdk/api/libgcc.md
-    - 示例工程:
-      - Hello World: page/sdk/api/hello_world.md
+  - SDK:
+    - 版本简介: page/sdk/index.md
+    - 通用:
+      - 环境准备: page/sdk/common/env.md
+      - 快速上手: page/sdk/common/quickstart.md
+    - SDK 1.0:
+      - API文档:
+        - GPIO: page/sdk/v1.0/gpio.md
+        - QSPI: page/sdk/v1.0/qspi.md
+        - PWM: page/sdk/v1.0/pwm.md
+        - HP_UART: page/sdk/v1.0/hp_uart.md
+        - I2C: page/sdk/v1.0/i2c.md
+        - SYS_UART: page/sdk/v1.0/sys_uart.md
+        - TIMER: page/sdk/v1.0/timer.md
+        - LIBC: page/sdk/v1.0/libc.md
+        - LIBGCC: page/sdk/v1.0/libgcc.md
+      - 示例工程:
+        - Hello World: page/sdk/v1.0/hello_world.md
+    - SDK 2.0:
+      - API文档:
+        - GPIO: page/sdk/v2.0/gpio_v2.md
+        - HP_UART: page/sdk/v2.0/hp_uart_v2.md
+        - SYS_UART: page/sdk/v2.0/sys_uart_v2.md

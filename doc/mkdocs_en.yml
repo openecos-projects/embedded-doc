@@ -35,6 +35,6 @@ nav:
   - Boards:
     - page/brd/index.md
   - SDK:
-    - Environment Setup: page/sdk/env.md
-    - Quick Start: page/sdk/quickstart.md
+    - Environment Setup: page/sdk/common/env.md
+    - Quick Start: page/sdk/common/quickstart.md
 
