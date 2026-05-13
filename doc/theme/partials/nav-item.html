@@ -84,12 +84,19 @@
       {% endif %}
     {% endif %}
     {% set sdk_attr = "" %}
+    {% set sdk_hidden = false %}
     {% if nav_item.title == "SDK 1.0" %}
       {% set sdk_attr = ' data-sdk-version="1.0"' %}
+      {% if page and "page/sdk/" in page.url and "page/sdk/v2.0/" in page.url %}
+        {% set sdk_hidden = true %}
+      {% endif %}
     {% elif nav_item.title == "SDK 2.0" %}
       {% set sdk_attr = ' data-sdk-version="2.0"' %}
+      {% if page and "page/sdk/v1.0/" in page.url %}
+        {% set sdk_hidden = true %}
+      {% endif %}
     {% endif %}
-    <li class="{{ class }} md-nav__item--nested"{{ sdk_attr }}>
+    <li class="{{ class }} md-nav__item--nested"{{ sdk_attr }}{% if sdk_hidden %} hidden aria-hidden="true"{% endif %}>
       {% if not is_pruned %}
         {% set checked = "checked" if nav_item.active %}
         {% if "navigation.expand" in features and not checked %}

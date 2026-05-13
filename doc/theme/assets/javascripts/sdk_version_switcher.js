@@ -1,14 +1,14 @@
 (() => {
-  const SDK_ROOT_PATH = "/page/sdk";
-  const SDK_COMMON_PATH = "/page/sdk/common";
   const STORAGE_KEY = "ecos.sdk.version";
   const DEFAULT_VERSION = "2.0";
+  const SDK_ROOT_SEGMENTS = ["page", "sdk"];
+  const SDK_COMMON_SEGMENT = "common";
   const SDK_VERSIONS = {
     "1.0": {
-      path: "/page/sdk/v1.0",
+      segment: "v1.0",
     },
     "2.0": {
-      path: "/page/sdk/v2.0",
+      segment: "v2.0",
     },
   };
   const SDK_PAGE_MAP = {
@@ -58,28 +58,55 @@
 
   const normalizePathname = (pathname) => {
     if (!pathname) return "/";
+    if (pathname.endsWith("/index.html")) {
+      pathname = pathname.slice(0, -"index.html".length);
+    }
     if (pathname.length > 1 && pathname.endsWith("/")) {
       return pathname.slice(0, -1);
     }
     return pathname;
   };
 
-  const matchesPathPrefix = (pathname, prefix) => {
-    const normalizedPathname = normalizePathname(pathname);
-    const normalizedPrefix = normalizePathname(prefix);
-    return normalizedPathname === normalizedPrefix || normalizedPathname.startsWith(`${normalizedPrefix}/`);
+  const splitPathSegments = (pathname) => normalizePathname(pathname).split("/").filter(Boolean);
+
+  const buildPathFromSegments = (segments, trailingSlash = false) => {
+    if (!segments.length) return "/";
+    const path = `/${segments.join("/")}`;
+    return trailingSlash ? `${path}/` : path;
   };
 
-  const isSdkPath = (pathname) => matchesPathPrefix(pathname, SDK_ROOT_PATH);
+  const getSdkPathInfo = (pathname) => {
+    const segments = splitPathSegments(pathname);
 
-  const getVersionFromPath = (pathname) => {
-    for (const [version, { path }] of Object.entries(SDK_VERSIONS)) {
-      if (matchesPathPrefix(pathname, path)) {
-        return version;
-      }
+    for (let index = 0; index <= segments.length - SDK_ROOT_SEGMENTS.length; index += 1) {
+      const matchesRoot = SDK_ROOT_SEGMENTS.every((segment, offset) => segments[index + offset] === segment);
+      if (!matchesRoot) continue;
+
+      const prefixSegments = segments.slice(0, index);
+      const trailingSegments = segments.slice(index + SDK_ROOT_SEGMENTS.length);
+      const rootSegments = [...prefixSegments, ...SDK_ROOT_SEGMENTS];
+
+      return {
+        prefixSegments,
+        trailingSegments,
+        rootPath: buildPathFromSegments(rootSegments),
+        rootPathWithSlash: buildPathFromSegments(rootSegments, true),
+      };
     }
 
-    if (matchesPathPrefix(pathname, SDK_COMMON_PATH)) {
+    return null;
+  };
+
+  const isSdkPath = (pathname) => Boolean(getSdkPathInfo(pathname));
+
+  const getVersionFromPath = (pathname) => {
+    const sdkPath = getSdkPathInfo(pathname);
+    if (!sdkPath) return null;
+
+    const [scope] = sdkPath.trailingSegments;
+    if (scope === SDK_VERSIONS["1.0"].segment) return "1.0";
+    if (scope === SDK_VERSIONS["2.0"].segment) return "2.0";
+    if (scope === SDK_COMMON_SEGMENT || !scope) {
       return "common";
     }
 
@@ -102,24 +129,22 @@
   };
 
   const getSdkRootPath = (pathname) => {
-    const normalizedPathname = normalizePathname(pathname);
-    const idx = normalizedPathname.indexOf(SDK_ROOT_PATH);
-    if (idx === -1) return `${SDK_ROOT_PATH}/`;
-    return `${normalizedPathname.slice(0, idx)}${SDK_ROOT_PATH}/`;
+    return getSdkPathInfo(pathname)?.rootPathWithSlash || buildPathFromSegments(SDK_ROOT_SEGMENTS, true);
   };
 
   const getVersionedSlug = (pathname) => {
     const version = getVersionFromPath(pathname);
-    const versionPath = SDK_VERSIONS[version]?.path;
-    if (!versionPath) return null;
+    const sdkPath = getSdkPathInfo(pathname);
+    if (!sdkPath || !SDK_VERSIONS[version]) return null;
 
-    const normalizedPathname = normalizePathname(pathname);
-    const rest = normalizedPathname.slice(normalizedPathname.indexOf(versionPath) + versionPath.length);
-    return rest.split("/").filter(Boolean)[0] || null;
+    const trailingSegments = sdkPath.trailingSegments;
+    if (trailingSegments[0] !== SDK_VERSIONS[version].segment) return null;
+    return trailingSegments[1] || null;
   };
 
   const buildTargetPath = (pathname, targetVersion) => {
-    if (!isVersionScopedPath(pathname)) {
+    const sdkPath = getSdkPathInfo(pathname);
+    if (!sdkPath || !isVersionScopedPath(pathname)) {
       return pathname;
     }
 
@@ -131,9 +156,10 @@
       return getSdkRootPath(pathname);
     }
 
-    const normalizedPathname = normalizePathname(pathname);
-    const prefix = normalizedPathname.slice(0, normalizedPathname.indexOf(SDK_ROOT_PATH));
-    return `${prefix}${SDK_VERSIONS[targetVersion].path}/${nextSlug}/`;
+    return buildPathFromSegments(
+      [...sdkPath.prefixSegments, ...SDK_ROOT_SEGMENTS, SDK_VERSIONS[targetVersion].segment, nextSlug],
+      true
+    );
   };
 
   const resolveCurrentVersion = (pathname) => {
@@ -152,8 +178,8 @@
       .map((link) => link.pathname || "")
       .filter((pathname) => pathname && pathname !== "/");
 
-    const hasV1 = hrefs.some((pathname) => matchesPathPrefix(pathname, SDK_VERSIONS["1.0"].path));
-    const hasV2 = hrefs.some((pathname) => matchesPathPrefix(pathname, SDK_VERSIONS["2.0"].path));
+    const hasV1 = hrefs.some((pathname) => getVersionFromPath(pathname) === "1.0");
+    const hasV2 = hrefs.some((pathname) => getVersionFromPath(pathname) === "2.0");
 
     if (hasV1 && !hasV2) return "1.0";
     if (hasV2 && !hasV1) return "2.0";
@@ -166,7 +192,7 @@
     for (const item of items) {
       const directLink = item.querySelector(":scope > .md-nav__link, :scope > .md-nav__container > .md-nav__link");
       const pathname = directLink?.pathname || "";
-      if (matchesPathPrefix(pathname, SDK_ROOT_PATH)) {
+      if (isSdkPath(pathname)) {
         return item;
       }
     }
