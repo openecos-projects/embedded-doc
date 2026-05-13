@@ -1,0 +1,83 @@
+{#-
+  This file was automatically generated - do not edit
+-#}
+{% import "partials/nav-item.html" as item with context %}
+{% set class = "md-nav md-nav--primary" %}
+{% if "navigation.tabs" in features %}
+  {% set class = class ~ " md-nav--lifted" %}
+{% endif %}
+{% if "toc.integrate" in features %}
+  {% set class = class ~ " md-nav--integrated" %}
+{% endif %}
+{% set sdk_switcher_label = "Display Version" if config.theme.language == "en" else "显示版本目录" %}
+{% set sdk_switcher_hint = "Common pages keep the same content." if config.theme.language == "en" else "通用文档不区分版本内容" %}
+{% set sdk_switcher_aria = "Choose SDK navigation version" if config.theme.language == "en" else "选择 SDK 版本目录" %}
+{% set sdk_nav_version = "none" %}
+{% if page and "page/sdk/" in page.url %}
+  {% if "page/sdk/v1.0/" in page.url %}
+    {% set sdk_nav_version = "1.0" %}
+  {% elif "page/sdk/v2.0/" in page.url %}
+    {% set sdk_nav_version = "2.0" %}
+  {% else %}
+    {% set sdk_nav_version = "2.0" %}
+  {% endif %}
+{% endif %}
+<nav class="{{ class }}" aria-label="{{ lang.t('nav') }}" data-md-level="0"{% if sdk_nav_version != "none" %} data-sdk-context="sdk" data-sdk-current-version="{{ sdk_nav_version }}"{% endif %}>
+  <label class="md-nav__title" for="__drawer">
+    <a href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}" title="{{ config.site_name | e }}" class="md-nav__button md-logo" aria-label="{{ config.site_name }}" data-md-component="logo">
+      {% include "partials/logo.html" %}
+    </a>
+    {{ config.site_name }}
+  </label>
+
+  {% if page and "page/sdk/" in page.url %}
+  {% set current_v = "none" %}
+  {% if "page/sdk/v1.0/" in page.url %}
+    {% set current_v = "1.0" %}
+  {% elif "page/sdk/v2.0/" in page.url %}
+    {% set current_v = "2.0" %}
+  {% elif "page/sdk/" in page.url %}
+    {% set current_v = "common" %}
+  {% endif %}
+
+  {% if current_v != "none" %}
+  <div id="ecos-sdk-version-switcher" class="ecos-version-switcher">
+    <div class="ecos-version-switcher__label">{{ sdk_switcher_label }}</div>
+    <div class="ecos-version-switcher__hint">{{ sdk_switcher_hint }}</div>
+    <select class="ecos-version-switcher__select" aria-label="{{ sdk_switcher_aria }}">
+      <option value="1.0"{% if current_v == "1.0" %} selected{% endif %}>SDK 1.0</option>
+      <option value="2.0"{% if current_v == "2.0" or current_v == "common" %} selected{% endif %}>SDK 2.0</option>
+    </select>
+  </div>
+  <script>
+    (() => {
+      const nav = document.currentScript.closest(".md-nav--primary");
+      if (!nav) return;
+
+      const serverVersion = "{{ sdk_nav_version }}";
+      const isCommonPage = {{ (current_v == "common") | tojson }};
+      const storedVersion = window.localStorage?.getItem("ecos.sdk.version");
+      const preferredVersion = isCommonPage && (storedVersion === "1.0" || storedVersion === "2.0")
+        ? storedVersion
+        : serverVersion;
+
+      nav.dataset.sdkCurrentVersion = preferredVersion;
+      document.documentElement.dataset.sdkNavVersion = preferredVersion;
+    })();
+  </script>
+  {% endif %}
+  {% endif %}
+
+  {% if config.repo_url %}
+    <div class="md-nav__source">
+      {% include "partials/source.html" %}
+    </div>
+  {% endif %}
+
+  <ul class="md-nav__list" data-md-scrollfix>
+    {% for nav_item in nav.items %}
+      {% set path = "__nav_" ~ loop.index %}
+      {{ item.render(nav_item, path, 1) }}
+    {% endfor %}
+  </ul>
+</nav>

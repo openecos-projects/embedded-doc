@@ -1,4 +1,4 @@
-INHERIT: tpl/cfg/mkdocs_base.yml
+INHERIT: cfg/mkdocs_base.yml
 
 docs_dir: src/zh
 site_dir: site

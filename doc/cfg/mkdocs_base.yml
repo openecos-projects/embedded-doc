@@ -1,0 +1,122 @@
+copyright: |
+  <div>Copyright &copy; 2025 ECOS Team. All under
+    <a
+      href="https://creativecommons.org/licenses/by-nc-sa/4.0"
+      target="_blank" rel="noopener">CC BY-NC-SA 4.0
+    </a>
+  </div>
+
+theme:
+  name: material
+  custom_dir: theme
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+
+plugins:
+  - tags
+  - meta
+  - search
+  - glightbox
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+      htmlmin_opts:
+        remove_comments: true
+  - git-revision-date-localized:
+      enabled: false
+      type: iso_date
+  - git-committers:
+      enabled: false
+      repository:
+      branch: main
+      exclude:
+        - index.md
+  - mkdocs-video
+
+extra:
+  alternate:
+    - name: 中文
+      link: /
+      lang: zh
+    - name: English
+      link: /en/
+      lang: en
+  consent:
+    title: Cookie Consent
+    description: >-
+        We use cookies to recognize your repeated visits and preferences, as well measure the effectiveness of our documentation and whether users find what they're searching for. With your consent, you're helping us to make our documentation better.
+  social:
+    - icon: fontawesome/solid/earth
+      link: https://openecos.com
+      name: Website
+    - icon: fontawesome/brands/github
+      link: https://github.com/openecos-projects
+      name: GitHub
+  scope: /
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - attr_list
+  - md_in_html
+  - pymdownx.superfences
+  - attr_list
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - footnotes
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - attr_list
+  - md_in_html
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - pymdownx.blocks.caption
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.arithmatex:
+      generic: true
+  - abbr
+  - attr_list
+  - pymdownx.snippets
+
+extra_javascript:
+  - assets/javascripts/mathjax.js
+  - assets/javascripts/sdk_version_switcher.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+  - https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4
+
+extra_css:
+  - assets/stylesheets/extra.css
+  - assets/stylesheets/tailwind.min.css

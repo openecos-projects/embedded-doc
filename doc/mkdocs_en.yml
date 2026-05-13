@@ -1,4 +1,4 @@
-INHERIT: tpl/cfg/mkdocs_base.yml
+INHERIT: cfg/mkdocs_base.yml
 
 docs_dir: src/en
 site_dir: site/en
@@ -37,4 +37,3 @@ nav:
   - SDK:
     - Environment Setup: page/sdk/common/env.md
     - Quick Start: page/sdk/common/quickstart.md
-

@@ -1,5 +1,8 @@
 -include tpl/Makefile
 
+FILE_TAILWIND_INT := theme/assets/stylesheets/tailwind.css
+FILE_TAILWIND_MIN := theme/assets/stylesheets/tailwind.min.css
+
 REPO_RES_DIR := res
 REPO_TPL_DIR := tpl
 ifeq ($(MKDOCS_ENV), deploy)
