@@ -87,7 +87,7 @@
     {% set sdk_hidden = false %}
     {% if nav_item.title == "SDK 1.0" %}
       {% set sdk_attr = ' data-sdk-version="1.0"' %}
-      {% if page and "page/sdk/" in page.url and "page/sdk/v2.0/" in page.url %}
+      {% if page and "page/sdk/" in page.url and "page/sdk/v1.0/" not in page.url %}
         {% set sdk_hidden = true %}
       {% endif %}
     {% elif nav_item.title == "SDK 2.0" %}
