@@ -70,3 +70,4 @@ nav:
         - HP_UART: page/sdk/v2.0/hp_uart_v2.md
         - SYS_UART: page/sdk/v2.0/sys_uart_v2.md
         - PWM: page/sdk/v2.0/pwm_v2.md
+        - TIMER: page/sdk/v2.0/timer_v2.md
