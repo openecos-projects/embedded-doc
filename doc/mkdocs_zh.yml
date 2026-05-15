@@ -65,9 +65,11 @@ nav:
       - 示例工程:
         - Hello World: page/sdk/v1.0/hello_world.md
     - SDK 2.0:
+      - 开始:
+        - 快速上手: page/sdk/v2.0/start/introduction.md
       - API文档:
-        - GPIO: page/sdk/v2.0/gpio_v2.md
-        - HP_UART: page/sdk/v2.0/hp_uart_v2.md
-        - SYS_UART: page/sdk/v2.0/sys_uart_v2.md
-        - PWM: page/sdk/v2.0/pwm_v2.md
-        - TIMER: page/sdk/v2.0/timer_v2.md
+        - GPIO: page/sdk/v2.0/api/gpio.md
+        - HP_UART: page/sdk/v2.0/api/hp_uart.md
+        - SYS_UART: page/sdk/v2.0/api/sys_uart.md
+        - PWM: page/sdk/v2.0/api/pwm.md
+        - TIMER: page/sdk/v2.0/api/timer.md

@@ -1,4 +1,4 @@
-# GPIO API 2.0
+# GPIO
 
 !!! info "文档说明"
 
