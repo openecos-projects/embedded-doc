@@ -74,3 +74,4 @@ nav:
         - PWM: page/sdk/v2.0/api/pwm.md
         - TIMER: page/sdk/v2.0/api/timer.md
         - QSPI: page/sdk/v2.0/api/qspi.md
+        - I2C: page/sdk/v2.0/api/i2c.md
