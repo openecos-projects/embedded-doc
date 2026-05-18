@@ -73,3 +73,4 @@ nav:
         - SYS_UART: page/sdk/v2.0/api/sys_uart.md
         - PWM: page/sdk/v2.0/api/pwm.md
         - TIMER: page/sdk/v2.0/api/timer.md
+        - QSPI: page/sdk/v2.0/api/qspi.md
