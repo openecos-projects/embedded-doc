@@ -75,3 +75,6 @@ nav:
         - TIMER: page/sdk/v2.0/api/timer.md
         - QSPI: page/sdk/v2.0/api/qspi.md
         - I2C: page/sdk/v2.0/api/i2c.md
+        - ARCHINFO: page/sdk/v2.0/api/archinfo.md
+        - CRC: page/sdk/v2.0/api/crc.md
+        - RCU: page/sdk/v2.0/api/rcu.md
