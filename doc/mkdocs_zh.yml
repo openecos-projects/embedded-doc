@@ -68,13 +68,17 @@ nav:
       - 开始:
         - 快速上手: page/sdk/v2.0/start/introduction.md
       - API文档:
-        - GPIO: page/sdk/v2.0/api/gpio.md
-        - HP_UART: page/sdk/v2.0/api/hp_uart.md
-        - SYS_UART: page/sdk/v2.0/api/sys_uart.md
-        - PWM: page/sdk/v2.0/api/pwm.md
-        - TIMER: page/sdk/v2.0/api/timer.md
-        - QSPI: page/sdk/v2.0/api/qspi.md
-        - I2C: page/sdk/v2.0/api/i2c.md
         - ARCHINFO: page/sdk/v2.0/api/archinfo.md
         - CRC: page/sdk/v2.0/api/crc.md
+        - GPIO: page/sdk/v2.0/api/gpio.md
+        - HP_UART: page/sdk/v2.0/api/hp_uart.md
+        - I2C: page/sdk/v2.0/api/i2c.md
+        - PS2: page/sdk/v2.0/api/ps2.md
+        - PWM: page/sdk/v2.0/api/pwm.md
+        - QSPI: page/sdk/v2.0/api/qspi.md
         - RCU: page/sdk/v2.0/api/rcu.md
+        - RNG: page/sdk/v2.0/api/rng.md
+        - RTC: page/sdk/v2.0/api/rtc.md
+        - SYS_UART: page/sdk/v2.0/api/sys_uart.md
+        - TIMER: page/sdk/v2.0/api/timer.md       
+        - WDG: page/sdk/v2.0/api/wdg.md
