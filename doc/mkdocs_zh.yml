@@ -84,3 +84,5 @@ nav:
         - WDG: page/sdk/v2.0/api/wdg.md
     - templates:
       - explanation: page/sdk/templates/explanation.md
+    - ip:
+      - uart_main: page/ip/uart_main.md
