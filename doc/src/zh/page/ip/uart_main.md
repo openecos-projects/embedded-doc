@@ -1,4 +1,4 @@
-# UART_MAIN 说明文档
+# UART_MAIN 说明文档111
 
 !!! info "文档说明"
     本文档用于说明 UART IP核 的设计原理、模块划分、寄存器接口、数据收发流程以及关键时序。该 IP 核使用       SystemVerilog 实现，顶层模块为 apb4_uart，通过 APB4 Slave 接口与 soc 内部总线连接，并通过 UART 串口信号完成异步串行数据收发。
