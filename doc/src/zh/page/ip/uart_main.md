@@ -1,152 +1,64 @@
-# UART_MAIN 说明文档111
+# APB4 UART 控制器设计说明
 
-!!! info "文档说明"
-    本文档用于说明 UART IP核 的设计原理、模块划分、寄存器接口、数据收发流程以及关键时序。该 IP 核使用       SystemVerilog 实现，顶层模块为 apb4_uart，通过 APB4 Slave 接口与 soc 内部总线连接，并通过 UART 串口信号完成异步串行数据收发。
-
-!!! info "工程概述"
-    该工程主要包含 APB4 寄存器访问逻辑、发送 FIFO、接收 FIFO、UART 发送模块、UART 接收模块以及中断控制模块。软件可以通过 APB4 总线配置 UART 的波特率、数据位长度、停止位、校验方式、FIFO 控制和中断使能。
+!!! info "阅读目标"
+    这篇文档是按照“先看懂，再能写”的顺序讲 APB4 UART 控制器。读完后，你应该能把一次 UART 发送、一次 UART 接收和一次中断处理从软件寄存器一直追到 `tx_o`、`rx_i` 和 `irq_o`，也能按文章末尾给出的实现清单实现同类控制器的设计。
 
 
-## UART 协议基础
+## 快速导航
+
+| 想看什么 | 直接跳转 |
+| -------- | -------- |
+| 先把整个 UART IP 串起来 | [一分钟看懂这个 IP](#one-minute) |
+| UART 帧、波特率、采样为什么这样设计 | [UART 协议基础](#uart-basic) |
+| 顶层端口和模块边界 | [接口与模块边界](#interfaces) |
+| 软件读写哪些寄存器 | [寄存器说明](#registers) |
+| APB4 访问、FIFO、TX、RX、中断怎么写 | [硬件实现思路](#hardware) |
+| 初始化、发送、接收、中断的完整流程 | [工作流程](#workflow) |
+| 看波形时重点检查什么 | [时序分析](#timing) |
+| 从零实现和验证的顺序 | [实现清单](#checklist) |
+| 出问题时先查哪里 | [调试建议](#debug) |
+
+## 一分钟看懂这个 IP {#one-minute}
+
+UART 控制器的核心作用是连接 APB4 总线和 UART 串口：软件通过寄存器配置工作方式，数据通过 FIFO 缓冲，`uart_tx` 和 `uart_rx` 负责串并转换，`uart_irq` 负责把状态转换成中断。
+
+<img src="../../../res/img/ip/uart_main/uart_overview.webp" alt="APB4 UART 控制器总览" style="zoom:100%;" />
+
+所以这个 IP 可以拆成四个模块来看：
+
+| 模块 | 主要内容 | 去哪里看 |
+| ---- | -------- | -------- |
+| 软件 | 软件如何配置波特率、帧格式、FIFO 和中断 |  [寄存器说明](#registers) |
+| 发送 | `TRX` 写入后，数据如何经过 TX FIFO 和 `uart_tx` 到 `tx_o` |  [UART 发送流程](#flow-tx) |
+| 接收 | `rx_i` 上的一帧数据如何被采样、校验并送到 RX FIFO | [UART 接收流程](#flow-rx) |
+| 中断 | RX、TX、错误状态如何变成 `irq_o` |  [中断处理流程](#flow-irq) |
+
+这里最容易混淆的是 `TRX`。它不是普通保存数据的寄存器，而是收发共用的数据窗口：
+
+| 访问 `TRX` 的方式 | 实际硬件动作 |
+| ----------------- | ------------ |
+| 写 `TRX` | push TX FIFO，等待 `uart_tx` 发送 |
+| 读 `TRX` | pop RX FIFO，把接收数据返回给 CPU |
+
+<img src="../../../res/img/ip/uart_main/uart_trx_path.webp" alt="TRX 收发共用数据窗口" style="zoom:100%;" />
+
+
+
+## UART 协议基础 {#uart-basic}
 ### UART 通信特点
 
-UART（Universal Asynchronous Receiver Transmitter）是一种常见的异步串行通信协议，主要用于芯片、开发板、外设或上位机之间的数据传输。UART 通信不需要额外的时钟线，发送端和接收端通过预先约定相同的波特率来完成数据同步。通常使用两根主要信号线进行通信：TX 用于发送数据，RX 用于接收数据。在空闲状态下，UART 信号线保持高电平；当需要发送数据时，发送端先产生一个低电平起始位，接收端检测到起始位后开始按照固定波特率采样后续数据。
+UART（Universal Asynchronous Receiver Transmitter）是一种异步串行通信协议。它没有独立的时钟线，发送端和接收端靠事先约定的波特率来对齐时间。常见 UART 连接只需要两根数据信号线：
 
-本工程实现的是一个 APB4 UART IP，UART 侧包含 `rx_i`、`tx_o` 和 `irq_o` 信号，APB4 侧则通过寄存器完成波特率、数据位、停止位、校验位以及中断等功能的一些配置。
+| 信号 | 方向 | 作用 |
+| ---- | ---- | ---- |
+| TX | 输出 | 把本设备的数据发送给外部设备 |
+| RX | 输入 | 接收外部设备发来的数据 |
 
-### UART 帧格式
+UART 信号线空闲时保持高电平。发送一帧数据时，发送端先把线拉低一个 bit 时间作为起始位，接收端检测到下降沿后，再按照约定波特率采样后续 bit。
 
-UART 数据以帧为单位进行传输。一个完整的 UART 数据帧通常由起始位、数据位、可选校验位和停止位组成。
+本工程把 UART 物理侧信号封装在 `uart_if` 中：
 
-```
-空闲状态     起始位       数据位         可选校验位      停止位
-   1          0        D0 ... Dn         Parity          1
-```
-
-* 起始位为低电平，用于表示一帧数据开始；
-* 数据位用于传输有效数据，通常按照低位优先的顺序发送；
-* 校验位用于简单的错误检测，可以根据配置选择是否启用；
-* 停止位为高电平，用于表示一帧数据结束，并使总线回到空闲状态。
-
-以常见的 8N1 格式为例，其含义是 8 个数据位、无校验位、1 个停止位。对应的帧结构如下：
-
-```
-空闲     起始位     D0 D1 D2 D3 D4 D5 D6 D7      停止位
- 1         0           数据位，低位先传             1
-```
-
-### 波特率与采样
-
-波特率表示串口每秒传输的比特数，例如 9600、115200 等。由于 UART 是异步通信，发送端和接收端没有共享时钟，因此双方必须配置相同或接近的波特率。如果波特率误差过大，接收端采样位置会发生偏移，可能导致数据接收错误。
-
-在本工程中，波特率由 `DIV` 分频寄存器配置。UART 内部根据系统时钟和分频值产生发送或接收所需的 bit 时间。发送时，每个 bit 会保持一个完整的 bit 周期；接收时，模块会在检测到起始位后，按照分频得到的采样节拍对数据位进行采样。接收端则会在 bit 的中间位置采样，以提高数据稳定性。本工程的接收模块会先对外部输入 `rx_i` 进行同步处理，再检测起始位下降沿，并按照配置的分频值来完成后续数据达的采样工作。
-
-### 数据位 校验位 停止位
-
-UART 的数据格式可以通过数据位、校验位和停止位进行配置。本工程通过 `LCR` 线控制寄存器配置这些参数。
-
-* 数据位：一帧中真正承载有效信息的 bit 数。本工程支持 5、6、7、8 bit 数据长度配置。
-* 校验位：检测传输过程中是否可能出现错误。本工程支持关闭校验，也支持奇校验、偶校验、固定 0 校验和固定 1 校验。发送端会根据数据内容生成校验位，接收端则根据接收到的数据重新计算校验结果，并与接收到的校验位进行比较。
-* 停止位：表示一帧数据结束。本工程支持 1 个或 2 个停止位。停止位始终为高电平，使 UART 信号线回到空闲状态，也为下一帧数据传输留出间隔。
-
-常见 UART 配置为 `8N1`，即 8 个数据位、无校验位、1 个停止位。
-
-
-## 总体设计
-### 顶层架构
-
-本工程的顶层模块是 `apb4_uart`。从整体上看，它是一个连接在 APB4 总线上的 UART 外设模块。`apb4_uart` 一侧通过 APB4 接口与 CPU 或总线主机连接，CPU 可以通过读写寄存器来配置 UART，并完成数据发送和接收。另一侧通过 UART 接口与外部串口设备连接，主要包括发送信号 `tx_o`、接收信号 `rx_i` 和中断信号 `irq_o`。
-
-顶层模块内部主要包含寄存器控制逻辑、TX FIFO、RX FIFO、UART 发送模块、UART 接收模块和中断模块。发送数据时，CPU 通过 APB4 写入数据，数据先进入 TX FIFO，再由发送模块转换成串行数据从 `tx_o` 输出。接收数据时，外部串行数据从 `rx_i` 输入，由接收模块解析后写入 RX FIFO，CPU 再通过 APB4 读取接收到的数据。因此`apb4_uart` 的主要作用就是在 APB4 总线和 UART 串口之间完成数据转换、配置控制和状态反馈。
-
-### 模块划分
-
-本设计主要由以下几个模块组成：
-
-| 模块              | 文件                  | 主要功能                                                    |
-| ----------------- | --------------------- | ----------------------------------------------------------- |
-| `apb4_uart`       | `rtl/apb4_uart.sv`    | 顶层模块，负责 APB4 访问、寄存器控制、FIFO 连接和子模块例化 |
-| `uart_tx`         | `rtl/uart_tx.sv`      | UART 发送模块，将并行数据转换为串行数据输出                 |
-| `uart_rx`         | `rtl/uart_rx.sv`      | UART 接收模块，将串行输入数据采样并转换为并行数据           |
-| `uart_irq`        | `rtl/uart_irq.sv`     | 中断控制模块，根据 FIFO 状态和错误状态产生中断              |
-| `uart_if`         | `rtl/uart_if.sv`      | UART 接口定义，包括 `rx_i`、`tx_o` 和 `irq_o`               |
-| `uart_define.svh` | `rtl/uart_define.svh` | 宏定义文件，定义寄存器地址、寄存器宽度和复位值              |
-
-从功能上看，整个设计可以分为三类逻辑：
-
-* 总线与寄存器逻辑：负责 APB4 总线读写和 UART 配置寄存器管理。
-* 数据收发逻辑：包括 TX FIFO、RX FIFO、`uart_tx` 和 `uart_rx`，负责 UART 数据的发送和接收。
-* 状态与中断逻辑：负责产生状态寄存器信息，并在满足条件时输出中断请求。
-
-### 数据通路
-
-本设计的数据通路主要分为发送和接收通路。发送通路负责将 CPU 写入的并行数据转换为 UART 串行数据输出；接收通路负责将外部输入的 UART 串行数据解析为并行数据，供 CPU 读取。
-
-| 方向     | 数据来源              | 缓冲结构 | 处理模块  | 数据输出              |
-| -------- | --------------------- | -------- | --------- | --------------------- |
-| 发送通路 | CPU 写入 `TRX` 寄存器 | TX FIFO  | `uart_tx` |       `tx_o`         |
-| 接收通路 | 外部设备输入 `rx_i`   | RX FIFO  | `uart_rx` | CPU 读取 `TRX` 寄存器 |
-
-### 控制通路
-
-控制通路用于配置 UART 的工作方式，并向软件反馈当前状态。CPU 通过 APB4 总线访问 UART 内部寄存器，完成对发送、接收、FIFO 和中断逻辑的控制。
-
-在本设计中，控制信息主要从寄存器控制逻辑分发到各个功能模块：
-
-| 控制对象   | 控制内容                                 |
-| ---------- | ---------------------------------------- |
-|  uart_tx   | 波特率分频、数据位长度、停止位、校验方式 |
-|  uart_rx   | 波特率分频、数据位长度、停止位、校验方式 |
-| TX/RX FIFO | FIFO 清空、数据写入、数据读取            |
-|  uart_irq  | 中断使能、FIFO 状态、错误状态            |
-
-软件写入配置寄存器后，相关配置会送到发送模块、接收模块、FIFO 和中断模块。软件读取状态寄存器时，可以获得当前 FIFO 状态、数据有效状态和中断状态。
-
-因此，控制通路的主要作用是连接 APB4 总线访问逻辑和 UART 内部各个功能模块，使软件能够控制 UART 的工作模式，并获取 UART 当前运行状态。
-
-### 时钟与复位
-
-本设计使用 APB4 总线时钟 `pclk` 作为内部主要工作时钟。寄存器逻辑、FIFO、发送模块、接收模块和中断模块都在该时钟下工作。复位信号为低有效复位 `presetn`。复位后，内部寄存器恢复默认值，FIFO 被清空，发送和接收状态机回到空闲状态，UART 发送线保持空闲高电平。由于 `rx_i` 来自外部 UART 设备，相对于本地 `pclk` 是异步信号，因此接收模块会先对 `rx_i` 进行同步处理，再进行下降沿检测和数据采样，以降低亚稳态风险。
-
-
-## 接口说明
-
-本工程顶层模块为 apb4_uart，对外主要包含两类接口：一类是 APB4 总线接口，用于 CPU 访问 UART 内部寄存器；另一类是 UART 串口接口，用于和外部串口设备进行数据收发。此外，UART 模块还提供中断输出信号，用于向系统上报接收、发送或错误状态。顶层端口定义如下：
-
-```c title="apb4_uart.sv"
-module apb4_uart #(
-    parameter int FIFO_DEPTH     = 32,
-    parameter int LOG_FIFO_DEPTH = $clog2(FIFO_DEPTH)
-) (
-    apb4_if.slave apb4,
-    uart_if.dut   uart
-);
-```
-
-### APB4 总线接口
-
-APB4 总线接口用于连接 CPU 或 soc 内部总线主机。软件通过该接口读写 UART 内部寄存器，从而完成 UART 配置、数据发送、数据接收和状态查询。
-
-本设计中，APB4 接口以 `apb4_if.slave` 的形式接入顶层模块。常用信号含义如下：
-
-| 信号      | 方向 | 说明                                      |
-| --------- | ---- | ----------------------------------------- |
-| `pclk`    | 输入 | APB4 总线时钟，也是 UART 内部主要工作时钟 |
-| `presetn` | 输入 | 低有效复位信号                            |
-| `psel`    | 输入 | 外设选择信号                              |
-| `penable` | 输入 | APB4 访问使能信号                         |
-| `pwrite`  | 输入 | 读写控制信号，1 表示写，0 表示读          |
-| `paddr`   | 输入 | 寄存器访问地址                            |
-| `pwdata`  | 输入 | 写寄存器数据                              |
-| `prdata`  | 输出 | 读寄存器返回数据                          |
-| `pready`  | 输出 | 从设备就绪信号                            |
-| `pslverr` | 输出 | 从设备错误响应信号                        |
-
-### UART 串口接口
-
-UART 串口接口用于连接外部 UART 设备。该接口在 `uart_if` 中定义，主要包含 `rx_i`、`tx_o` 和 `irq_o` 三个信号。
-
-```c title="uart.if.sv"
+```systemverilog
 interface uart_if ();
   logic rx_i;
   logic tx_o;
@@ -157,192 +69,652 @@ interface uart_if ();
 endinterface
 ```
 
-| 信号    | 方向 | 说明                                      |
-| ------- | ---- | ----------------------------------------- |
-| `rx_i`  | 输入 | UART 串行接收信号，由外部设备输入到本模块 |
-| `tx_o`  | 输出 | UART 串行发送信号，由本模块输出到外部设备 |
-| `irq_o` | 输出 | UART 中断请求信号，输出给系统中断控制逻辑 |
+其中 `tx_o` 由 [uart_tx 发送模块](#uart-tx) 驱动，`rx_i` 进入 [uart_rx 接收模块](#uart-rx)，`irq_o` 由 [uart_irq 中断模块](#uart-irq) 产生。
 
-`tx_o` 由 `uart_tx` 模块产生，用于输出 UART 串行发送数据。`rx_i` 输入到 `uart_rx` 模块，用于接收外部 UART 串行数据。
+### UART 帧格式
 
-### 中断接口
+UART 以“帧”为单位传输数据。一帧通常从起始位开始，随后是低位优先的数据位、可选校验位和停止位。采样位置和 bit 宽度可以直接来看下图。
 
-中断信号通过 `uart.irq_o` 输出。当 UART 内部满足中断条件时，`uart_irq` 模块会拉高中断请求信号，通知 CPU 进行处理。本工程中断主要包括以下几类：
+<img src="../../../res/img/ip/uart_main/uart_frame_sample.webp" alt="UART 帧格式与采样位置" style="zoom:100%;" />
 
-| 中断来源 | 说明 |
-|---|---|
-| RX 中断 | RX FIFO 中的数据达到配置阈值 |
-| TX 中断 | TX FIFO 为空，可以继续写入发送数据 |
-| 错误中断 | 接收过程中检测到校验错误 |
+| 组成 | 电平或内容 | 在硬件里的动作 |
+| ---- | ---------- | -------------- |
+| 起始位 | 低电平 `0` | `uart_tx` 先拉低 `tx_o`；`uart_rx` 检测 `rx_i` 下降沿 |
+| 数据位 | 有效数据，低位先传 | 发送端右移输出，接收端按位采样并写入接收寄存器 |
+| 校验位 | 可选 | 由 `LCR` 配置，发送端生成，接收端检查 |
+| 停止位 | 高电平 `1` | 发送端拉高 `tx_o`，接收端检查该位置是否为高 |
 
+这个工程没有把帧格式写死在状态机里，而是通过 [LCR 线控制寄存器](#reg-lcr) 配置数据位长度、停止位数量和校验方式。
 
-## 寄存器说明
+### 波特率与采样
 
-UART 内部寄存器通过 APB4 总线访问，地址按 4 字节对齐。当前设计主要包含 `LCR`、`DIV`、`TRX`、`FCR` 和 `LSR` 五个寄存器。
+波特率表示串口每秒传输的 bit 数，例如 9600、115200。UART 没有共享时钟，所以发送端和接收端的波特率必须接近。如果误差过大，接收端采样点会逐渐偏离 bit 中心，最后读到错误数据。本工程用 [DIV 分频寄存器](#reg-div) 来配置 bit 时间。以 50 MHz 时钟、115200 波特率为例：
 
-### LCR 线控制寄存器
-
-`LCR` 用于配置 UART 的工作格式和中断使能。主要配置内容包括：
-
-* 数据位长度：支持 5、6、7、8 bit；
-* 停止位长度：支持 1 或 2 位停止位；
-* 校验方式：支持关闭校验、奇校验、偶校验、固定 0 校验和固定 1 校验；
-* 中断使能：控制 RX、TX 和校验错误相关中断。
-
-该寄存器会影响 `uart_tx` 和 `uart_rx` 的帧格式处理方式。
-
-### DIV 分频寄存器
-
-`DIV` 用于配置 UART 的波特率分频值，寄存器偏移地址为 `0x04`。该寄存器低 16 位有效，用于设置分频系数；高 16 位为保留位。发送模块和接收模块都会使用该分频值产生 UART 每一 bit 的时间长度。软件初始化 UART 时，需要根据系统时钟频率和目标波特率配置 `DIV`, 本工程使用如下：
-
-```
+```c
 UART1_REG_DIV = 434;  // 50MHz / 115200
 ```
 
-复位后，`DIV` 默认值为 `0x0002`。
+可以把 `DIV` 理解成“一个 UART bit 要等待多少个 `pclk` 周期”。发送端按 `DIV` 切换输出位，接收端先等 `DIV/2` 找到起始位中心，再按 `DIV` 采样后续的比特。接收端的波形见 [UART 接收采样时序](#timing-rx)。
 
-### TRX 收发数据寄存器
 
-`TRX` 是 UART 的数据收发寄存器，寄存器偏移地址为 `0x08`。该寄存器低 8 位有效。写入 `TRX` 时，数据会进入 TX FIFO，之后由 `uart_tx` 模块串行发送；读取 `TRX` 时，会从 RX FIFO 中取出已经接收到的数据。因此，`TRX` 可以理解为发送和接收共用的数据窗口：
+## 接口与模块边界 {#interfaces}
+### 顶层端口
 
+本工程顶层模块为 `apb4_uart`，一侧接 APB4 总线，另一侧接 UART 串口接口：
+
+```systemverilog title="apb4_uart.sv"
+module apb4_uart #(
+    parameter int FIFO_DEPTH     = 32,
+    parameter int LOG_FIFO_DEPTH = $clog2(FIFO_DEPTH)
+) (
+    apb4_if.slave apb4,
+    uart_if.dut   uart
+);
 ```
-写 TRX → 数据进入 TX FIFO → uart_tx 发送
-读 TRX → 从 RX FIFO 取出数据 → CPU 获取接收数据
+
+`FIFO_DEPTH=32` 表示 TX FIFO 和 RX FIFO 都可以缓存 32 个字节；`LOG_FIFO_DEPTH` 用于 FIFO 指针或计数器宽度。
+
+### APB4 总线接口
+
+APB4 接口用于连接 CPU 或 SoC 内部总线主机。软件通过它读写 UART 寄存器，完成初始化、发送、接收和状态查询。
+
+| 信号 | 方向 | 说明 |
+| ---- | ---- | ---- |
+| `pclk`  | 输入 | APB4 总线时钟，也是 UART 内部工作时钟 |
+| `presetn`  | 输入 | 低有效复位 |
+| `psel` | 输入 | 当前外设被选中 |
+| `penable` | 输入 | APB4 access 阶段有效 |
+| `pwrite` | 输入 | 读写方向，1 表示写，0 表示读 |
+| `paddr` | 输入 | 寄存器地址 |
+| `pwdata` | 输入 | 写数据 |
+| `prdata` | 输出 | 读数据 |
+| `pready` | 输出 | 从设备就绪 |
+| `pslverr` | 输出 | 从设备错误响应 |
+
+APB4 访问分 setup 和 access 两个阶段。写 `TRX` push TX FIFO、读 `TRX` pop RX FIFO，必须只在 access 握手完成时发生。具体写法见 [APB4 访问逻辑](#apb4-access)，对应波形见 [APB 写寄存器时序](#timing-apb-write) 和 [APB 读寄存器时序](#timing-apb-read)。
+
+### UART 串口接口 {#uart-uart}
+
+UART 串口接口用于连接外部 UART 设备。
+
+| 信号 | 方向 | 说明 |
+| ---- | ---- | ---- |
+| `rx_i` | 输入 | UART 串行接收信号，由外部设备输入 |
+| `tx_o` | 输出 | UART 串行发送信号，由本模块输出 |
+| `irq_o` | 输出 | UART 中断请求信号，输出给系统中断控制逻辑 |
+
+`rx_i` 是异步输入，应在 `uart_rx` 内部先同步再使用。`tx_o` 由 `uart_tx` 状态机驱动，空闲时保持高电平。`irq_o` 由中断 pending 状态组合产生。
+
+### 模块划分
+
+读源码或自己实现时，建议按下面顺序理解模块边界：
+
+| 模块 | 位置 | 主要职责 | 继续阅读 |
+| ---- | ---- | -------- | -------- |
+| `apb4_uart` | 顶层 | APB4 地址译码、寄存器读写、FIFO 连接、子模块例化 | [apb4_uart 顶层模块](#apb4-uart) |
+| `uart_tx` | 发送通路 | 从 TX FIFO 取并行字节，转换为 UART 串行帧 | [uart_tx 发送模块](#uart-tx) |
+| `uart_rx` | 接收通路 | 同步 `rx_i`，采样 UART 帧，恢复并行字节 | [uart_rx 接收模块](#uart-rx) |
+| `uart_irq` | 状态与中断 | 根据 FIFO 状态、错误状态和中断使能产生 `irq_o` | [uart_irq 中断模块](#uart-irq) |
+| `uart_if` | 对外接口 | 统一定义 `rx_i`、`tx_o`、`irq_o` | [UART 串口接口](#uart-uart) |
+| `uart_define.svh` | 公共定义 | 定义寄存器地址、字段宽度和复位值 | [寄存器速查表](#reg-table) |
+
+从功能上看，可以把它们归成三类：
+
+| 类别 | 包含内容 | 设计重点 |
+| ---- | -------- | -------- |
+| 总线与寄存器逻辑 | `apb4_uart`、`uart_define.svh` | 地址译码、寄存器读写、状态返回 |
+| 数据收发逻辑 | TX FIFO、RX FIFO、`uart_tx`、`uart_rx` | 用 FIFO 分离 APB4 访问和 UART bit 时序 |
+| 状态与中断逻辑 | `uart_irq`、`LSR` 状态寄存器 | 把硬件状态转换成软件可查询、可响应的状态 |
+
+### 数据通路 {#datapath}
+
+发送和接收是两条方向相反的数据通路，`TRX` 是软件侧共同入口。
+
+| 方向 | 数据来源 | 缓冲结构 | 处理模块 | 数据输出 |
+| ---- | -------- | -------- | -------- | -------- |
+| 发送通路 | 软件写入 `TRX` 寄存器 | TX FIFO | `uart_tx` | `tx_o` |
+| 接收通路 | 外部设备输入 `rx_i` | RX FIFO | `uart_rx` | 软件读取 `TRX` 寄存器 |
+
+发送侧由软件写入 TX FIFO，接收侧由 `uart_rx` 写入 RX FIFO。FIFO 的作用是将 APB4 的快速访问和 UART 的慢速 bit 传输分离开，避免软件跟着每一位串口时序工作。
+
+### 控制通路
+
+控制通路负责把软件配置分发给硬件模块：
+
+| 控制对象 | 控制内容 | 来自寄存器 |
+| -------- | -------- | ---------- |
+| `uart_tx` | 波特率分频、数据位长度、停止位、校验方式 | `DIV`、`LCR` |
+| `uart_rx` | 波特率分频、数据位长度、停止位、校验方式 | `DIV`、`LCR` |
+| TX/RX FIFO | FIFO 清空、写入、读取、RX 触发阈值 | `FCR`、`TRX` |
+| `uart_irq` | 中断使能、FIFO 状态、错误状态 | `LCR`、`LSR` 相关状态 |
+
+一句话区分它们：数据通路搬运字节，控制通路决定字节按什么格式发送、什么时候产生中断、软件能看到哪些状态。
+
+### 时钟与复位
+
+本设计使用 APB4 总线时钟 `pclk` 作为内部主时钟。寄存器、FIFO、发送模块、接收模块和中断模块都工作在 `pclk` 下。复位信号为低有效 `presetn`。
+
+复位后应满足以下状态：
+
+| 对象 | 复位后状态 |
+| ---- | ---------- |
+| 配置寄存器 | 恢复默认值 |
+| TX FIFO / RX FIFO | 清空 |
+| `uart_tx` | 回到空闲态，`tx_o` 保持高电平 |
+| `uart_rx` | 回到等待起始位状态 |
+| 中断输出 | 无 pending 中断时 `irq_o` 为低 |
+
+## 寄存器说明 {#registers}
+
+寄存器是软件和硬件之间的合同。软件不需要知道 `uart_tx` 里有多少状态，但它必须知道写哪个寄存器可以发送数据，读哪个状态位可以判断 FIFO 是否满。
+
+<img src="../../../res/img/ip/uart_main/uart_register_map.webp" alt="UART 寄存器与硬件模块关系" style="zoom:100%;" />
+
+### 寄存器速查表 {#reg-table}
+
+UART 内部寄存器通过 APB4 总线访问，地址按 4 字节对齐。当前设计主要包含 `LCR`、`DIV`、`TRX`、`FCR` 和 `LSR` 五个寄存器。
+
+| 寄存器 | 偏移地址 | 访问属性 | 作用 |
+| ------ | -------- | -------- | ---- |
+| `LCR` | `0x00` | 读写 | 配置数据位、停止位、校验方式和中断使能 |
+| `DIV` | `0x04` | 读写 | 配置波特率分频值 |
+| `TRX` | `0x08` | 读写 | 写入时进入 TX FIFO，读取时从 RX FIFO 取数 |
+| `FCR` | `0x0C` | 读写 | 清空 FIFO，配置 RX FIFO 中断触发阈值 |
+| `LSR` | `0x10` | 只读 | 反馈 FIFO、发送器、接收器和中断状态 |
+
+推荐理解顺序是：先看 `DIV` 和 `LCR` 确定 UART 怎么工作，再看 `TRX` 知道数据怎么进出，最后看 `FCR` 和 `LSR` 理解缓冲和状态反馈。
+
+### LCR 线控制寄存器 {#reg-lcr}
+
+`LCR` 决定 UART 以什么格式收发数据，也控制中断是否允许输出。它影响 [uart_tx 发送模块](#uart-tx)、[uart_rx 接收模块](#uart-rx) 和 [uart_irq 中断模块](#uart-irq)。
+
+| 字段功能 | 用途 | 连接到的硬件逻辑 |
+| -------- | ---- | ---------------- |
+| 数据位长度 | 选择 5、6、7、8 bit 数据长度 | TX/RX 的 bit 计数上限 |
+| 停止位长度 | 选择 1 或 2 个停止位 | TX/RX 的 stop 状态计数 |
+| 校验方式 | 关闭校验、奇校验、偶校验、固定 0、固定 1 | TX 的校验位生成、RX 的校验检查 |
+| 中断使能 | 允许 RX、TX、校验错误中断输出 | `uart_irq` |
+
+设计时不要让 `uart_tx` 和 `uart_rx` 各自保存一套重复配置。更清晰的方式是让顶层寄存器逻辑统一产生配置线，再把配置线接到两个模块。
+
+### DIV 分频寄存器 {#reg-div}
+
+`DIV` 用于配置 UART 的 bit 时间，偏移地址为 `0x04`。该寄存器低 16 位有效，高 16 位保留。发送模块和接收模块都使用该分频值。
+
+本工程常用配置如下：
+
+```c
+UART1_REG_DIV = 434;  // 50MHz / 115200
 ```
 
-软件写入 `TRX` 前，一般需要先确认 TX FIFO 未满；读取 `TRX` 前，一般需要先确认 RX FIFO 中是不是存在有效数据。
+发送侧计满一次 `DIV` 就切换下一位；接收侧先等 `DIV/2` 确认起始位中心，再按 `DIV` 周期采样数据位。
 
-### FCR FIFO 控制寄存器
+### TRX 收发数据寄存器 {#reg-trx}
 
-`FCR` 用于控制 UART 的发送 FIFO 和接收 FIFO，寄存器偏移地址为 `0x0C`。
+`TRX` 是发送和接收共用的数据窗口，偏移地址为 `0x08`，低 8 位有效。
 
-该寄存器主要包含两个功能：
+写 `TRX` 会 push TX FIFO，读 `TRX` 会 pop RX FIFO。因此这两个动作必须只在 APB4 access 握手完成时发生一次。具体写法见 [APB4 访问逻辑](#apb4-access)。
 
-* 清空 TX FIFO 和 RX FIFO；
-* 配置 RX FIFO 的中断触发阈值。
+### FCR FIFO 控制寄存器 {#reg-fcr}
 
-其中，`TF_CLR` 用于清空发送 FIFO，`RF_CLR` 用于清空接收 FIFO。`RX_TRG_LEVL` 用于配置接收 FIFO 中断触发阈值，支持 1、2、8、14 个数据触发。另外软件初始化 UART 时，通常会先通过 `FCR` 清空收发 FIFO，避免旧数据影响后续通信。
+`FCR` 用于控制 TX FIFO 和 RX FIFO，偏移地址为 `0x0C`。
 
-```
+它主要做两件事：
+
+1. 清空 TX FIFO 和 RX FIFO。
+2. 配置 RX FIFO 中断触发阈值。
+
+本工程初始化时使用如下写法：
+
+```c
 UART1_REG_FCR = 0b1111;  // 清空 TX/RX FIFO，并设置 RX 触发阈值
 UART1_REG_FCR = 0b1100;  // 释放 FIFO clear
 ```
 
-### LSR 线状态寄存器
+这里的两次写入很关键：第一次让 clear 信号有效，第二次释放 clear 信号。RX 触发阈值越低，中断响应越快但次数越多；阈值越高，中断次数越少但单次处理数据更多。
 
-`LSR` 用于反馈 UART 当前状态，寄存器偏移地址为 `0x10`。该寄存器为只读寄存器，可以通过读取它判断当前是否可以发送数据、是否收到数据，以及是否存在中断或错误。主要状态包括：
+### LSR 线状态寄存器 {#reg-lsr}
 
-* `FULL`：TX FIFO 已满；
-* `EMPT`：RX FIFO 为空；
-* `TEMT`：发送 FIFO 为空且发送模块空闲；
-* `THRE`：TX FIFO 为空；
-* `PE`：接收数据存在校验错误；
-* `DR`：RX FIFO 中存在有效数据；
-* `RXIP` / `TXIP` / `PEIP`：分别表示接收、发送和校验错误中断 pending 状态。
+`LSR` 是只读状态寄存器，偏移地址为 `0x10`。软件发送、接收和处理中断时都要读它。
 
-在我们发送数据前，可以通过 `FULL` 判断 TX FIFO 是否还能继续写入；接收数据前，可以通过 `DR` 判断 RX FIFO 中是否有可读数据。
+| 状态 | 含义 | 软件怎么用 |
+| ---- | ---- | ---------- |
+| `FULL` | TX FIFO 已满 | 发送前轮询该位，为 0 才写 `TRX` |
+| `EMPT` | RX FIFO 为空 | 读取前可用它判断是否没有数据 |
+| `TEMT` | TX FIFO 为空且发送模块空闲 | 用于等待所有数据真正发送完成 |
+| `THRE` | TX FIFO 为空 | 可继续批量写入待发送数据 |
+| `PE` | 接收数据存在校验错误 | 错误处理或统计 |
+| `DR` | RX FIFO 中存在有效数据 | 为 1 时读取 `TRX` |
+| `RXIP` | 接收中断 pending | 中断处理函数判断来源 |
+| `TXIP` | 发送中断 pending | 中断处理函数判断来源 |
+| `PEIP` | 校验错误中断 pending | 中断处理函数判断来源 |
 
+发送一个字节最少只需要两个动作：
 
-## 具体模块设计
-### apb4_uart 顶层模块
-
-`apb4_uart` 是整个 UART IP 的顶层模块，主要负责把 APB4 总线接口、寄存器控制逻辑、FIFO、发送模块、接收模块和中断模块连接在一起。CPU 通过 APB4 接口访问该模块内部寄存器，实现 UART 参数配置、数据发送、数据接收和状态查询。模块内部根据访问地址判断当前操作的寄存器，并将控制信息分发给 `uart_tx`、`uart_rx`、FIFO 和 `uart_irq` 等子模块。简单来说，其实`apb4_uart` 就是整个设计的控制中心，负责完成 APB4 总线和 UART 收发逻辑之间的转换。
-
-### uart_tx 发送模块
-
-`uart_tx` 是 UART 发送模块，负责把并行数据转换为串行数据输出。
-
-当 TX FIFO 中存在待发送数据时，`uart_tx` 会读取一个字节的数据，并按照 UART 帧格式依次发送起始位、数据位、可选校验位和停止位。发送过程中，模块会根据 `DIV` 配置控制每一位持续的时间，并根据 `LCR` 配置决定数据位长度、校验方式和停止位数量。该模块最终通过 `tx_o` 输出 UART 串行发送信号。
-
-### uart_rx 接收模块
-
-`uart_rx` 是 UART 接收模块，负责从 `rx_i` 上接收外部输入的串行数据，并转换为并行数据。
-
-由于 `rx_i` 是外部异步输入信号，接收模块会先对其进行同步处理，再检测起始位下降沿。检测到一帧数据开始后，模块按照配置的波特率进行采样，依次接收数据位，并根据配置判断是否需要进行校验检查。接收完成后，`uart_rx` 会输出接收到的数据和有效标志，随后数据被写入 RX FIFO，供 CPU 读取。
-
-### uart_irq 中断模块
-
-`uart_irq` 是中断控制模块，负责根据 UART 当前状态产生中断请求。结合中断使能配置、RX FIFO 数据数量、TX FIFO 状态以及接收错误状态，判断是否需要产生中断。当前设计主要支持接收中断、发送中断和校验错误中断。当存在有效中断 pending 时，`irq_o` 输出高电平，通知 CPU 进行处理。
-
-### uart_if 接口模块
-
-uart_if 用于统一定义 UART 对外接口信号，主要包括：
-
-* `rx_i`：UART 接收输入信号；
-* `tx_o`：UART 发送输出信号；
-* `irq_o`：UART 中断输出信号。
-
-该接口同时定义了设计端和测试平台端使用的 modport，方便 DUT 和 testbench 使用同一套接口连接方式。
-
-### TX/RX FIFO
-
-本设计中使用两个 FIFO 作为数据缓冲。作用是解耦 APB4 总线访问和 UART 串行收发，使 CPU 不需要严格跟随 UART 每一位的发送和接收时序。
-
-TX FIFO 用于缓存 CPU 写入的待发送数据。CPU 写 `TRX` 寄存器后，数据进入 TX FIFO，之后由 `uart_tx` 取出并发送。
-
-RX FIFO 用于缓存已经接收到的数据。`uart_rx` 接收完成后，将数据写入 RX FIFO，CPU 读取 `TRX` 寄存器时从 RX FIFO 中取出数据。
-
-
-## 工作流程
-### 软件初始化流程
-
-软件初始化主要完成波特率配置、FIFO 初始化、帧格式配置和中断使能。初始化完成后，UART 才进入正常收发状态。
-
-<img src="../../../res/img/ip/uart_main/initialization.webp" alt="UART 初始化流程" style="zoom:80%;" />
-
-对应本工程的软件初始化顺序为：
-
+```c
+while (UART1_REG_LSR & UART_LSR_FULL) {
+    ;
+}
+UART1_REG_TRX = ch;
 ```
+
+接收一个字节则是：
+
+```c
+if (UART1_REG_LSR & UART_LSR_DR) {
+    ch = UART1_REG_TRX & 0xff;
+}
+```
+
+如果要等所有数据真正离开发送线，应看 `TEMT`，不要只看 `THRE`。`THRE` 只能说明 TX FIFO 空了，最后一个字节可能还在发送状态机里。
+
+
+## 硬件实现思路 {#hardware}
+
+这一节按硬件连接顺序展开：顶层先接 APB4 和寄存器，再把 `TRX` 接到 FIFO，然后分别实现 TX、RX 和 IRQ。
+
+### apb4_uart 顶层模块 {#apb4-uart}
+
+`apb4_uart` 是整个控制器的集成层。它主要完成四件事：
+
+1. APB4 地址译码和寄存器读写。
+2. TX/RX FIFO 的 push、pop 和状态汇总。
+3. 把 `LCR`、`DIV`、`FCR` 配置送到 TX、RX 和 IRQ 模块。
+4. 例化 `uart_tx`、`uart_rx` 和 `uart_irq`。
+
+顶层内部可以按四类关系来读：配置写入由 APB4 地址译码后更新 `LCR`、`DIV` 和 `FCR`；发送数据由 `TRX` 写入进入 TX FIFO，再交给 `uart_tx` 输出到 `tx_o`；接收数据从 `rx_i` 进入 `uart_rx`，写入 RX FIFO 后由 `TRX` 读访问返回给 CPU；中断则由 FIFO 状态、TX/RX 状态和错误状态共同决定，最后反映到 `LSR` 和 `irq_o`。
+
+### APB4 访问逻辑 {#apb4-access}
+
+寄存器访问逻辑的核心是只在 APB4 access 握手完成时产生读写动作：
+
+```systemverilog
+logic apb_wr_en;
+logic apb_rd_en;
+
+assign apb_wr_en = apb.psel && apb.penable && apb.pwrite  && apb.pready;
+assign apb_rd_en = apb.psel && apb.penable && !apb.pwrite && apb.pready;
+```
+
+写逻辑先处理普通配置寄存器：
+
+```systemverilog
+always_ff @(posedge apb.pclk or negedge apb.presetn) begin
+  if (!apb.presetn) begin
+    lcr_q <= LCR_RESET_VALUE;
+    div_q <= DIV_RESET_VALUE;
+    fcr_q <= FCR_RESET_VALUE;
+  end else if (apb_wr_en) begin
+    unique case (apb.paddr)
+      UART_LCR_ADDR: lcr_q <= apb.pwdata;
+      UART_DIV_ADDR: div_q <= apb.pwdata;
+      UART_FCR_ADDR: fcr_q <= apb.pwdata;
+      UART_TRX_ADDR: begin
+        // TRX 写入不保存到普通寄存器，而是 push TX FIFO
+      end
+      default: ;
+    endcase
+  end
+end
+```
+
+读逻辑把寄存器、RX FIFO 数据和状态寄存器组合到 `prdata`：
+
+```systemverilog
+always_comb begin
+  unique case (apb.paddr)
+    UART_LCR_ADDR: apb.prdata = lcr_q;
+    UART_DIV_ADDR: apb.prdata = div_q;
+    UART_TRX_ADDR: apb.prdata = {24'b0, rx_fifo_rdata};
+    UART_FCR_ADDR: apb.prdata = fcr_q;
+    UART_LSR_ADDR: apb.prdata = lsr_status;
+    default:       apb.prdata = 32'b0;
+  endcase
+end
+```
+
+`TRX` 读写要直接接 FIFO：
+
+```systemverilog
+assign tx_fifo_wr = apb_wr_en && (apb.paddr == UART_TRX_ADDR) && !tx_fifo_full;
+assign tx_fifo_wdata = apb.pwdata[7:0];
+
+assign rx_fifo_rd = apb_rd_en && (apb.paddr == UART_TRX_ADDR) && !rx_fifo_empty;
+```
+
+这就是 APB4 UART 顶层最关键的分界：`LCR`、`DIV`、`FCR` 是配置寄存器，`TRX` 是 FIFO 访问窗口，`LSR` 是状态窗口。
+
+### TX/RX FIFO {#fifo}
+
+本设计使用两个 FIFO 做数据缓冲：
+
+| FIFO | 写入方 | 读取方 | 解决的问题 |
+| ---- | ------ | ------ | ---------- |
+| TX FIFO | 软件写入 `TRX` | `uart_tx` | 软件可以快速写入多个字节，不必等待每帧发送结束 |
+| RX FIFO | `uart_rx` | 软件读取 `TRX` | 接收到的数据可以先缓存，软件稍后读取 |
+
+FIFO 至少要提供这些信号：
+
+| 信号 | 含义 |
+| ---- | ---- |
+| `wr_en` | 写使能 |
+| `wdata` | 写数据 |
+| `rd_en` | 读使能 |
+| `rdata` | 读数据 |
+| `full` | FIFO 已满 |
+| `empty` | FIFO 为空 |
+| `level` | 当前缓存数据数量，用于 RX 触发阈值 |
+
+加入 FIFO 后，APB4 的快速寄存器访问和 UART 的慢速串行传输可以各按自己的节奏运行。
+
+### uart_tx 发送模块 {#uart-tx}
+
+`uart_tx` 负责把 TX FIFO 里的并行字节变成 UART 串行帧。完整流程图见 [UART 发送流程](#flow-tx)，实际输出波形见 [UART 发送帧时序](#timing-tx)。
+
+发送模块内部通常包含这些寄存器或信号：
+
+| 寄存器/信号 | 作用 |
+| ----------- | ---- |
+| `tx_state` | 当前发送状态，例如 IDLE、START、DATA、PARITY、STOP |
+| `baud_cnt` | 根据 `DIV` 计数，控制每个 bit 的持续时间 |
+| `bit_cnt` | 已发送的数据 bit 数 |
+| `tx_shift` | 保存当前待发送字节，按低位优先移出 |
+| `parity_bit` | 根据数据和 `LCR` 配置生成的校验位 |
+
+状态机可以按下面逻辑写：
+
+| 状态 | 输出或动作 | 下一个状态 |
+| ---- | ---------- | ---------- |
+| IDLE | `tx_o=1`，等待 TX FIFO 非空 | 取数后进入 START |
+| START | `tx_o=0`，保持一个 bit 时间 | DATA |
+| DATA | 低位先输出 `tx_shift`，每 bit 保持一个 bit 时间 | PARITY 或 STOP |
+| PARITY | 如果启用校验，输出 `parity_bit` | STOP |
+| STOP | `tx_o=1`，保持 1 或 2 个 bit 时间 | FIFO 非空继续 START，否则 IDLE |
+
+写代码时抓住一个原则：状态跳转只在 bit 时间结束时发生。`baud_cnt` 计满之前，`tx_o` 应保持不变。
+
+### uart_rx 接收模块 {#uart-rx}
+
+`uart_rx` 负责从 `rx_i` 接收 UART 帧，并恢复成并行字节。完整流程图见 [UART 接收流程](#flow-rx)，采样点位置见 [UART 接收采样时序](#timing-rx)。
+
+接收比发送更容易出错，因为采样点必须对准 bit 中心。接收模块建议按下面四步实现：
+
+1. 对 `rx_i` 做两级同步。
+2. 在空闲态检测同步后信号的下降沿。
+3. 等待半个 bit 时间，在起始位中心确认它仍然为低。
+4. 每隔一个 bit 时间采样一个数据位，采完后检查校验位和停止位。
+
+状态机可以按下面逻辑写：
+
+| 状态 | 动作 | 异常处理 |
+| ---- | ---- | -------- |
+| IDLE | 等待 `rx_i` 从 1 变 0 | 无 |
+| START | 等待 `DIV/2` 后确认起始位仍为 0 | 如果已回到 1，认为是毛刺，回 IDLE |
+| DATA | 每隔 `DIV` 采样一次，低位先写入 `rx_shift` | 数据位数量由 `LCR` 决定 |
+| PARITY | 如果启用校验，采样并比较校验位 | 不一致则置位 `PE` |
+| STOP | 采样停止位，应为 1 | 一帧结束后产生 `rx_valid` |
+
+`rx_valid` 只应该拉高一个 `pclk` 周期，用来写 RX FIFO：
+
+```systemverilog
+assign rx_fifo_wr = rx_valid && !rx_fifo_full;
+assign rx_fifo_wdata = rx_data;
+```
+
+如果 RX FIFO 已满，设计中需要明确处理逻辑：丢弃新数据、覆盖旧数据或增加溢出状态位。本文列出的状态位没有单独包含 overflow，因此实现和验证时要确认 RTL 对满 FIFO 接收的处理方式。
+
+### uart_irq 中断模块 {#uart-irq}
+
+`uart_irq` 的职责是把硬件状态转换成一个给 CPU 的中断请求。它不搬运数据，只判断“现在是否需要软件介入”。完整处理过程见 [中断处理流程](#flow-irq)。
+
+中断逻辑可以写成：
+
+```systemverilog
+assign rx_irq_pending = rx_irq_en && (rx_fifo_level >= rx_trigger_level);
+assign tx_irq_pending = tx_irq_en && tx_fifo_empty;
+assign pe_irq_pending = pe_irq_en && parity_error_pending;
+
+assign uart.irq_o = rx_irq_pending | tx_irq_pending | pe_irq_pending;
+```
+
+这里有两个设计点需要明确：
+
+* pending 是“状态型”还是“锁存型”。状态型 pending 会随着 FIFO 数据量的变化自动消失；锁存型 pending 需要软件读/写某个寄存器清除。
+* 每类中断都要有明确退出条件。RX 中断通过读取 `TRX` 降低 FIFO 水位退出；TX 中断通过写入新数据或关闭 TX 中断退出；校验错误中断通过读取状态并处理错误数据退出。
+
+本工程文档中 `LSR` 提供 `RXIP`、`TXIP` 和 `PEIP` 三个 pending 状态。软件可先读 [LSR 线状态寄存器](#reg-lsr) 判断中断来源，再执行对应处理。
+
+## 工作流程 {#workflow}
+
+这一节从软件使用角度看完整流程。每个流程都配了现有流程图，并标出它和寄存器、硬件模块的关系。
+
+### 软件初始化流程 {#flow-init}
+
+UART 初始化要按顺序完成波特率、FIFO 和帧格式配置。初始化流程如下：
+
+<img src="../../../res/img/ip/uart_main/initialization.webp" alt="UART 初始化流程" style="zoom:100%;" />
+
+本工程的初始化代码如下：
+
+```c
 UART1_REG_DIV = 434;        // 50MHz / 115200
 UART1_REG_FCR = 0b1111;     // 清空 TX/RX FIFO，并设置 RX 触发阈值
 UART1_REG_FCR = 0b1100;     // 释放 FIFO clear
-UART1_REG_LCR = 0b00011111; // 配置 8N1，并使能相关中断
+UART1_REG_LCR = 0b00011111; // 配置 UART 数据格式，并使能相关中断
 ```
 
-其中，`DIV` 用于决定 UART 每一 bit 的持续时间，`FCR` 用于初始化 FIFO 状态，`LCR` 用于设置 UART 帧格式和中断使能。
+每一步对应的硬件效果如下：
 
-### UART 发送流程
+| 步骤 | 写入寄存器 | 硬件效果 |
+| ---- | ---------- | -------- |
+| 1 | `DIV` | `uart_tx` 和 `uart_rx` 获得 bit 时间 |
+| 2 | `FCR=0b1111` | TX/RX FIFO 被清空，RX 触发阈值被设置 |
+| 3 | `FCR=0b1100` | FIFO clear 释放，FIFO 可以正常收发 |
+| 4 | `LCR` | 设置数据位、停止位、校验方式和中断使能 |
 
-该部分使用 UART TX 发送流程图说明。
+初始化完成后，UART 才进入正常收发状态。
+
+### UART 发送流程 {#flow-tx}
+
+发送流程图如下：
 
 <img src="../../../res/img/ip/uart_main/TX.webp" alt="UART 发送流程" style="zoom:100%;" />
 
-### UART 接收流程
+发送时只抓住两点：写 `TRX` 前先确认 TX FIFO 未满；如果要等最后一位真正发完，看 `TEMT`，不要只看 `THRE`。
 
-该部分使用 UART RX 接收流程图说明。
+一个最小发送函数可以写成：
+
+```c
+void uart_putc(uint8_t ch)
+{
+    while (UART1_REG_LSR & UART_LSR_FULL) {
+        ;
+    }
+    UART1_REG_TRX = ch;
+}
+```
+
+### UART 接收流程 {#flow-rx}
+
+接收流程图如下：
 
 <img src="../../../res/img/ip/uart_main/RX.webp" alt="UART 接收流程" style="zoom:100%;" />
 
-### 中断产生与清除流程
+接收时只抓住两点：硬件在 bit 中心采样，软件只在 `LSR.DR=1` 时读取 `TRX`。如果启用了校验，再结合 `PE` 或 `PEIP` 判断是否要丢弃数据。
+
+一个最小接收函数可以写成：
+
+```c
+int uart_getc(uint8_t *ch)
+{
+    if ((UART1_REG_LSR & UART_LSR_DR) == 0) {
+        return 0;
+    }
+
+    *ch = UART1_REG_TRX & 0xff;
+    return 1;
+}
+```
+
+### 中断处理流程 {#flow-irq}
 
 UART 中断由 `uart_irq` 模块产生。中断来源主要包括 RX FIFO 触发、TX FIFO 为空以及接收校验错误。
 
+中断产生与清除流程如下：
+
 <img src="../../../res/img/ip/uart_main/FIFO.webp" alt="UART 中断产生与清除流程" style="zoom:100%;" />
 
-其中，`RXIP`、`TXIP` 和 `PEIP` 分别表示接收中断、发送中断和校验错误中断。读取 `LSR` 可以判断中断来源，并完成相应处理。
+中断服务函数的基本结构如下：
 
+```c
+void uart_irq_handler(void)
+{
+    uint32_t lsr = UART1_REG_LSR;
 
-## 时序分析
-### APB 写寄存器时序
+    if (lsr & UART_LSR_RXIP) {
+        while (UART1_REG_LSR & UART_LSR_DR) {
+            uint8_t ch = UART1_REG_TRX & 0xff;
+            // 处理接收到的 ch
+        }
+    }
 
-APB 写操作分为 setup 阶段和 access 阶段。setup 阶段 `psel` 拉高，地址和写数据保持稳定；access 阶段 `penable` 拉高，当 `pready` 有效时完成一次写访问。写握手条件为 `psel && penable && pwrite && pready`。
+    if (lsr & UART_LSR_TXIP) {
+        while ((UART1_REG_LSR & UART_LSR_FULL) == 0) {
+            // 如果软件发送缓冲区还有数据，继续写 TRX
+            // 如果没有数据，可以退出或关闭 TX 中断
+            break;
+        }
+    }
+
+    if (lsr & UART_LSR_PEIP) {
+        // 读取错误状态，统计或丢弃错误数据
+    }
+}
+```
+
+中断处理的核心原则是：先读 `LSR` 判断来源，再通过读 `TRX`、写 `TRX` 或处理错误状态让 pending 条件消失。
+
+## 时序分析 {#timing}
+
+这一节专门对应已有时序图。看 RTL 波形时，可以按表格里的检查项逐项确认。
+
+### APB 写寄存器时序 {#timing-apb-write}
+
+APB 写操作分为 setup 和 access 两个阶段。setup 阶段 `psel` 拉高，地址和写数据保持稳定；access 阶段 `penable` 拉高，当 `pready` 有效时完成写访问。
+
+写握手条件为：
+
+```systemverilog
+apb.psel && apb.penable && apb.pwrite && apb.pready
+```
+
+时序图如下：
 
 <img src="../../../res/img/ip/uart_main/Sequence%20Diagram1.webp" alt="APB 写寄存器时序" style="zoom:100%;" />
 
-### APB 读寄存器时序
+看波形时重点检查：
 
-APB 读操作同样分为 setup 阶段和 access 阶段。setup 阶段 `psel` 拉高，读地址保持稳定；access 阶段 `penable` 拉高，从设备通过 `prdata` 返回读数据。当 `pready` 有效时，本次读访问完成。读握手条件为 `psel && penable && !pwrite && pready`。
+| 检查项 | 期望结果 |
+| ------ | -------- |
+| setup 阶段 | `paddr`、`pwdata` 稳定，但不产生寄存器写副作用 |
+| access 阶段 | `penable=1` 且 `pready=1` 时写入一次 |
+| 写 `TRX` | TX FIFO 只 push 一次 |
+| 写 `FCR` | clear 信号按配置拉高或释放 |
+
+### APB 读寄存器时序 {#timing-apb-read}
+
+APB 读操作同样分为 setup 和 access 两个阶段。setup 阶段地址保持稳定；access 阶段 `penable` 拉高，从设备通过 `prdata` 返回读数据。
+
+读握手条件为：
+
+```systemverilog
+apb.psel && apb.penable && !apb.pwrite && apb.pready
+```
+
+时序图如下：
 
 <img src="../../../res/img/ip/uart_main/Sequence%20Diagram2.webp" alt="APB 读寄存器时序" style="zoom:100%;" />
 
-### UART 发送帧时序
+看波形时重点检查：
 
-UART 发送线 `tx_o` 在空闲状态下保持高电平。当发送开始时，`tx_o` 先拉低一个 bit 时间作为起始位，随后按低位优先顺序发送数据位。数据位发送完成后，如果开启校验，则继续发送校验位；最后发送停止位，使 `tx_o` 回到高电平。每一位持续的时间由 `DIV` 分频寄存器决定。
+| 检查项 | 期望结果 |
+| ------ | -------- |
+| 读 `LCR/DIV/FCR/LSR` | `prdata` 返回对应寄存器或状态 |
+| 读 `TRX` | `prdata[7:0]` 返回 RX FIFO 当前数据 |
+| 读 `TRX` 副作用 | RX FIFO 只 pop 一次 |
+| RX FIFO 为空时读 `TRX` | 返回值和错误处理策略应在设计中明确 |
+
+### UART 发送帧时序 {#timing-tx}
+
+UART 发送线 `tx_o` 空闲时为高电平。发送开始时，`tx_o` 先拉低一个 bit 时间作为起始位，随后按低位优先发送数据位。如果启用校验，再发送校验位；最后发送停止位，使 `tx_o` 回到高电平。
+
+时序图如下：
 
 <img src="../../../res/img/ip/uart_main/Sequence%20Diagram3.webp" alt="UART 发送帧时序" style="zoom:100%;" />
 
-### UART 接收采样时序
+看波形时重点检查：
 
-UART 接收模块先检测 `rx_i` 的下降沿，判断起始位到来。检测到下降沿后，模块等待半个 bit 时间，在起始位中间位置进行确认；之后每隔一个 bit 时间在数据位中心位置采样一次。接收完数据位后，再根据配置检查校验位和停止位。
+| 检查项 | 期望结果 |
+| ------ | -------- |
+| 空闲态 | `tx_o=1` |
+| 起始位 | `tx_o=0`，持续一个 bit 时间 |
+| 数据位 | 低位先发，每一位持续 `DIV` 个 `pclk` 周期 |
+| 校验位 | 只有启用校验时出现 |
+| 停止位 | `tx_o=1`，持续 1 或 2 个 bit 时间 |
+| 连续发送 | 一帧结束后，如果 TX FIFO 非空，可以立即开始下一帧 |
+
+### UART 接收采样时序 {#timing-rx}
+
+UART 接收模块先检测 `rx_i` 的下降沿。检测到下降沿后，模块等待半个 bit 时间，在起始位中心确认低电平；之后每隔一个 bit 时间，在每个数据位中心采样一次。
+
+时序图如下：
 
 <img src="../../../res/img/ip/uart_main/Sequence%20Diagram4.webp" alt="UART 接收采样时序" style="zoom:100%;" />
+
+看波形时重点检查：
+
+| 检查项 | 期望结果 |
+| ------ | -------- |
+| `rx_i` 同步 | 外部输入先经过同步寄存器 |
+| 起始位确认 | 下降沿后等待 `DIV/2` 再判断 |
+| 数据采样 | 每隔 `DIV` 周期采样一次 |
+| bit 顺序 | 第一次数据采样写入 bit0 |
+| `rx_valid` | 一帧结束后拉高一个 `pclk` 周期 |
+| RX FIFO 写入 | `rx_valid` 有效且 FIFO 未满时 push |
+
+## 实现清单 {#checklist}
+
+如果要从零写出一个 APB4 UART 控制器，可以按下面顺序实现。每一步都能单独验证，整体风险会低很多。
+
+| 步骤 | 做什么 | 验证目标 |
+| ---- | ------ | -------- |
+| 1 | 定义 `uart_if` 和 `uart_define.svh`，列出 `LCR/DIV/TRX/FCR/LSR` 偏移 | testbench 能例化顶层，APB4 读默认值正确 |
+| 2 | 实现 [APB4 访问逻辑](#apb4-access)，先只支持普通寄存器读写 | 写 `DIV/LCR/FCR` 后能读回 |
+| 3 | 加入 [TX/RX FIFO](#fifo)，把 `TRX` 读写接到 FIFO | 写 `TRX` 增加 TX FIFO level，读 `TRX` 弹出 RX FIFO |
+| 4 | 实现 [uart_tx](#uart-tx)，先固定 8N1，再接 `LCR` | 发送 `0x55` 时 `tx_o` bit 顺序和 bit 宽度正确 |
+| 5 | 实现 [uart_rx](#uart-rx)，先固定 8N1，再接 `LCR` | 输入合法帧后 `rx_valid` 拉高，`rx_data` 正确 |
+| 6 | 实现 [uart_irq](#uart-irq) | RX 阈值、TX 空、校验错误能产生对应 pending 和 `irq_o` |
+| 7 | 顶层联调 | 初始化后能完成 `uart_putc`、`uart_getc` 和中断处理 |
+
+顶层联调可以用下面的软件流程驱动：
+
+```c
+UART1_REG_DIV = 434;
+UART1_REG_FCR = 0b1111;
+UART1_REG_FCR = 0b1100;
+UART1_REG_LCR = 0b00011111;
+
+uart_putc('A');
+uart_getc(&ch);
+```
+
+联调时至少覆盖这些场景：
+
+| 场景 | 预期 |
+| ---- | ---- |
+| 软件写 `TRX='A'` | `tx_o` 输出字符 `A` 的 UART 帧 |
+| testbench 驱动 `rx_i` 输入字符 | 软件读 `TRX` 得到同一字符 |
+| RX 中断 | 软件读出数据后 pending 消失 |
+| TX 中断 | 软件补充发送数据后 pending 变化正确 |
+| 校验错误 | `PE` 或 `PEIP` 被置位，软件能识别错误来源 |
+
