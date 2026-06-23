@@ -6,7 +6,7 @@ ECOS Embedded SDK 文档会随 SDK 版本演进。你可以在左侧栏顶部通
 
 ## 发布版本
 
-- SDK 2.0（推荐）: [进入文档](v2.0/gpio_v2.md)
+- SDK 2.0（推荐）: [进入文档](v2.0/api/gpio.md)
 - SDK 1.0: [进入文档](v1.0/gpio.md)
 
 ## 通用文档
