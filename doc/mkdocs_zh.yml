@@ -79,6 +79,7 @@ nav:
         - RCU: page/sdk/v2.0/api/rcu.md
         - RNG: page/sdk/v2.0/api/rng.md
         - RTC: page/sdk/v2.0/api/rtc.md
+        - SFUD: page/sdk/v2.0/api/sfud.md
         - SYS_UART: page/sdk/v2.0/api/sys_uart.md
         - TIMER: page/sdk/v2.0/api/timer.md       
         - WDG: page/sdk/v2.0/api/wdg.md
