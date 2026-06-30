@@ -70,6 +70,7 @@ nav:
       - API文档:
         - ARCHINFO: page/sdk/v2.0/api/archinfo.md
         - CRC: page/sdk/v2.0/api/crc.md
+        - FATFS: page/sdk/v2.0/api/fatfs.md
         - GPIO: page/sdk/v2.0/api/gpio.md
         - HP_UART: page/sdk/v2.0/api/hp_uart.md
         - I2C: page/sdk/v2.0/api/i2c.md
