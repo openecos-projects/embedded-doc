@@ -74,6 +74,7 @@ nav:
         - GPIO: page/sdk/v2.0/api/gpio.md
         - HP_UART: page/sdk/v2.0/api/hp_uart.md
         - I2C: page/sdk/v2.0/api/i2c.md
+        - LETTER_SHELL: page/sdk/v2.0/api/letter-shell.md
         - PS2: page/sdk/v2.0/api/ps2.md
         - PWM: page/sdk/v2.0/api/pwm.md
         - QSPI: page/sdk/v2.0/api/qspi.md
@@ -81,6 +82,7 @@ nav:
         - RNG: page/sdk/v2.0/api/rng.md
         - RTC: page/sdk/v2.0/api/rtc.md
         - SFUD: page/sdk/v2.0/api/sfud.md
+        - SPI_SOFTWARE: page/sdk/v2.0/api/spi_software.md
         - SYS_UART: page/sdk/v2.0/api/sys_uart.md
         - TIMER: page/sdk/v2.0/api/timer.md       
         - WDG: page/sdk/v2.0/api/wdg.md
