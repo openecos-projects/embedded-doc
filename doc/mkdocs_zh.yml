@@ -86,8 +86,10 @@ nav:
         - SFUD: page/sdk/v2.0/api/sfud.md
         - SPI_SOFTWARE: page/sdk/v2.0/api/spi_software.md
         - SYS_UART: page/sdk/v2.0/api/sys_uart.md
-        - TIMER: page/sdk/v2.0/api/timer.md       
+        - TIMER: page/sdk/v2.0/api/timer.md
         - WDG: page/sdk/v2.0/api/wdg.md
+    - SDK 3.0:
+      - 开发指南: page/sdk/v3.0/index.md
     - templates:
       - explanation: page/sdk/templates/explanation.md
     - ip:

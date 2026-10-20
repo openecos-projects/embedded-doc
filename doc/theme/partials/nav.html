@@ -18,6 +18,8 @@
     {% set sdk_nav_version = "1.0" %}
   {% elif "page/sdk/v2.0/" in page.url %}
     {% set sdk_nav_version = "2.0" %}
+  {% elif "page/sdk/v3.0/" in page.url %}
+    {% set sdk_nav_version = "3.0" %}
   {% else %}
     {% set sdk_nav_version = "2.0" %}
   {% endif %}
@@ -36,6 +38,8 @@
     {% set current_v = "1.0" %}
   {% elif "page/sdk/v2.0/" in page.url %}
     {% set current_v = "2.0" %}
+  {% elif "page/sdk/v3.0/" in page.url %}
+    {% set current_v = "3.0" %}
   {% elif "page/sdk/" in page.url %}
     {% set current_v = "common" %}
   {% endif %}
@@ -47,6 +51,7 @@
     <select class="ecos-version-switcher__select" aria-label="{{ sdk_switcher_aria }}">
       <option value="1.0"{% if current_v == "1.0" %} selected{% endif %}>SDK 1.0</option>
       <option value="2.0"{% if current_v == "2.0" or current_v == "common" %} selected{% endif %}>SDK 2.0</option>
+      <option value="3.0"{% if current_v == "3.0" %} selected{% endif %}>SDK 3.0</option>
     </select>
   </div>
   <script>
@@ -57,7 +62,8 @@
       const serverVersion = "{{ sdk_nav_version }}";
       const isCommonPage = {{ (current_v == "common") | tojson }};
       const storedVersion = window.localStorage?.getItem("ecos.sdk.version");
-      const preferredVersion = isCommonPage && (storedVersion === "1.0" || storedVersion === "2.0")
+      const preferredVersion = isCommonPage &&
+        (storedVersion === "1.0" || storedVersion === "2.0" || storedVersion === "3.0")
         ? storedVersion
         : serverVersion;
 

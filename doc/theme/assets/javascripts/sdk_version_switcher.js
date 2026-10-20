@@ -10,6 +10,9 @@
     "2.0": {
       segment: "v2.0",
     },
+    "3.0": {
+      segment: "v3.0",
+    },
   };
   const SDK_PAGE_MAP = {
     gpio: { "1.0": "gpio", "2.0": "gpio_v2" },
@@ -33,7 +36,8 @@
   const findPrimaryNav = () =>
     document.querySelector(".md-sidebar.md-sidebar--primary .md-nav--primary");
 
-  const isSdkVersion = (version) => version === "1.0" || version === "2.0";
+  const isSdkVersion = (version) =>
+    version === "1.0" || version === "2.0" || version === "3.0";
 
   const getActiveVersion = () => {
     const docVersion = document.documentElement.dataset.sdkNavVersion;
@@ -106,6 +110,7 @@
     const [scope] = sdkPath.trailingSegments;
     if (scope === SDK_VERSIONS["1.0"].segment) return "1.0";
     if (scope === SDK_VERSIONS["2.0"].segment) return "2.0";
+    if (scope === SDK_VERSIONS["3.0"].segment) return "3.0";
     if (scope === SDK_COMMON_SEGMENT || !scope) {
       return "common";
     }
@@ -115,16 +120,16 @@
 
   const isVersionScopedPath = (pathname) => {
     const version = getVersionFromPath(pathname);
-    return version === "1.0" || version === "2.0";
+    return version === "1.0" || version === "2.0" || version === "3.0";
   };
 
   const getStoredVersion = () => {
     const v = window.localStorage?.getItem(STORAGE_KEY);
-    return v === "1.0" || v === "2.0" ? v : null;
+    return v === "1.0" || v === "2.0" || v === "3.0" ? v : null;
   };
 
   const setStoredVersion = (version) => {
-    if (version !== "1.0" && version !== "2.0") return;
+    if (version !== "1.0" && version !== "2.0" && version !== "3.0") return;
     window.localStorage?.setItem(STORAGE_KEY, version);
   };
 
@@ -153,6 +158,16 @@
     const nextSlug = pageKey ? SDK_PAGE_MAP[pageKey]?.[targetVersion] : null;
 
     if (!nextSlug) {
+      if (targetVersion === "3.0") {
+        return buildPathFromSegments(
+          [
+            ...sdkPath.prefixSegments,
+            ...SDK_ROOT_SEGMENTS,
+            SDK_VERSIONS[targetVersion].segment,
+          ],
+          true
+        );
+      }
       return getSdkRootPath(pathname);
     }
 
@@ -164,13 +179,13 @@
 
   const resolveCurrentVersion = (pathname) => {
     const inferred = getVersionFromPath(pathname);
-    if (inferred === "1.0" || inferred === "2.0") return inferred;
+    if (inferred === "1.0" || inferred === "2.0" || inferred === "3.0") return inferred;
     return getStoredVersion() || getActiveVersion() || DEFAULT_VERSION;
   };
 
   const classifyVersionItem = (item) => {
     const markedVersion = item.getAttribute("data-sdk-version");
-    if (markedVersion === "1.0" || markedVersion === "2.0") {
+    if (markedVersion === "1.0" || markedVersion === "2.0" || markedVersion === "3.0") {
       return markedVersion;
     }
 
@@ -180,9 +195,11 @@
 
     const hasV1 = hrefs.some((pathname) => getVersionFromPath(pathname) === "1.0");
     const hasV2 = hrefs.some((pathname) => getVersionFromPath(pathname) === "2.0");
+    const hasV3 = hrefs.some((pathname) => getVersionFromPath(pathname) === "3.0");
 
-    if (hasV1 && !hasV2) return "1.0";
-    if (hasV2 && !hasV1) return "2.0";
+    if (hasV1 && !hasV2 && !hasV3) return "1.0";
+    if (hasV2 && !hasV1 && !hasV3) return "2.0";
+    if (hasV3 && !hasV1 && !hasV2) return "3.0";
     return null;
   };
 
@@ -203,11 +220,12 @@
   const findVersionNavItems = (primaryNav) => {
     const markedV1 = primaryNav.querySelector('.md-nav__item[data-sdk-version="1.0"]');
     const markedV2 = primaryNav.querySelector('.md-nav__item[data-sdk-version="2.0"]');
-    if (markedV1 || markedV2) {
-      return { "1.0": markedV1, "2.0": markedV2 };
+    const markedV3 = primaryNav.querySelector('.md-nav__item[data-sdk-version="3.0"]');
+    if (markedV1 || markedV2 || markedV3) {
+      return { "1.0": markedV1, "2.0": markedV2, "3.0": markedV3 };
     }
 
-    const result = { "1.0": null, "2.0": null };
+    const result = { "1.0": null, "2.0": null, "3.0": null };
     const sdkNavItem = findSdkNavItem(primaryNav);
     if (!sdkNavItem) return result;
 
@@ -216,7 +234,7 @@
     for (const item of items) {
       const version = classifyVersionItem(item);
       if (version) result[version] = item;
-      if (result["1.0"] && result["2.0"]) break;
+      if (result["1.0"] && result["2.0"] && result["3.0"]) break;
     }
 
     return result;
@@ -230,10 +248,11 @@
 
   const applyNavVisibility = (primaryNav, version) => {
     const navItems = findVersionNavItems(primaryNav);
-    if (!navItems["1.0"] && !navItems["2.0"]) return false;
+    if (!navItems["1.0"] && !navItems["2.0"] && !navItems["3.0"]) return false;
 
     setNavVisibility(navItems["1.0"], version === "1.0");
     setNavVisibility(navItems["2.0"], version === "2.0");
+    setNavVisibility(navItems["3.0"], version === "3.0");
     return true;
   };
 
@@ -284,7 +303,7 @@
           select.dataset.bound = "true";
           select.addEventListener("change", (e) => {
             const targetVersion = e.target?.value;
-            if (targetVersion !== "1.0" && targetVersion !== "2.0") return;
+            if (targetVersion !== "1.0" && targetVersion !== "2.0" && targetVersion !== "3.0") return;
 
             setStoredVersion(targetVersion);
             applyVersionState(targetVersion);
