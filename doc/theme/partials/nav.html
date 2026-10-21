@@ -9,11 +9,13 @@
 {% if "toc.integrate" in features %}
   {% set class = class ~ " md-nav--integrated" %}
 {% endif %}
+{% set is_zh = config.theme.language == "zh" %}
+{% set is_sdk_landing = page and (page.url == "page/sdk/" or page.url == "page/sdk" or page.url == "page/sdk/index.html") %}
 {% set sdk_switcher_label = "Display Version" if config.theme.language == "en" else "显示版本目录" %}
-{% set sdk_switcher_hint = "Common pages keep the same content." if config.theme.language == "en" else "通用文档不区分版本内容" %}
+{% set sdk_switcher_hint = "Common pages keep the same content." if config.theme.language == "en" else "切换版本将进入该版本首页；通用文档只切换下方目录" %}
 {% set sdk_switcher_aria = "Choose SDK navigation version" if config.theme.language == "en" else "选择 SDK 版本目录" %}
 {% set sdk_nav_version = "none" %}
-{% if page and "page/sdk/" in page.url %}
+{% if is_zh and page and "page/sdk/" in page.url %}
   {% if "page/sdk/v1.0/" in page.url %}
     {% set sdk_nav_version = "1.0" %}
   {% elif "page/sdk/v2.0/" in page.url %}
@@ -32,7 +34,7 @@
     {{ config.site_name }}
   </label>
 
-  {% if page and "page/sdk/" in page.url %}
+  {% if is_zh and page and "page/sdk/" in page.url and not is_sdk_landing %}
   {% set current_v = "none" %}
   {% if "page/sdk/v1.0/" in page.url %}
     {% set current_v = "1.0" %}
@@ -40,8 +42,12 @@
     {% set current_v = "2.0" %}
   {% elif "page/sdk/v3.0/" in page.url %}
     {% set current_v = "3.0" %}
-  {% elif "page/sdk/" in page.url %}
+  {% elif "page/sdk/templates/" in page.url %}
+    {% set current_v = "2.0" %}
+  {% elif "page/sdk/common/" in page.url %}
     {% set current_v = "common" %}
+  {% else %}
+    {% set current_v = "2.0" %}
   {% endif %}
 
   {% if current_v != "none" %}
@@ -49,9 +55,9 @@
     <div class="ecos-version-switcher__label">{{ sdk_switcher_label }}</div>
     <div class="ecos-version-switcher__hint">{{ sdk_switcher_hint }}</div>
     <select class="ecos-version-switcher__select" aria-label="{{ sdk_switcher_aria }}">
-      <option value="1.0"{% if current_v == "1.0" %} selected{% endif %}>SDK 1.0</option>
-      <option value="2.0"{% if current_v == "2.0" or current_v == "common" %} selected{% endif %}>SDK 2.0</option>
-      <option value="3.0"{% if current_v == "3.0" %} selected{% endif %}>SDK 3.0</option>
+      <option value="3.0"{% if current_v == "3.0" %} selected{% endif %}>SDK 3.0（开发中）</option>
+      <option value="2.0"{% if current_v == "2.0" or current_v == "common" %} selected{% endif %}>SDK 2.0（推荐）</option>
+      <option value="1.0"{% if current_v == "1.0" %} selected{% endif %}>SDK 1.0（历史版本）</option>
     </select>
   </div>
   <script>
@@ -69,6 +75,11 @@
 
       nav.dataset.sdkCurrentVersion = preferredVersion;
       document.documentElement.dataset.sdkNavVersion = preferredVersion;
+
+      const select = nav.querySelector("#ecos-sdk-version-switcher select");
+      if (select && preferredVersion !== "none") {
+        select.value = preferredVersion;
+      }
     })();
   </script>
   {% endif %}

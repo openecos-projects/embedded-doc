@@ -41,6 +41,7 @@ nav:
       - v2.1（一生一芯四期）: page/brd/starry-sky-l/v2.1.md
       - v3.0（一生一芯五期）: page/brd/starry-sky-l/v3.0.md
       - v3.1（一生一芯五期）: page/brd/starry-sky-l/v3.1.md
+      - v4.0: page/brd/starry-sky-l/v4.0.md
     - 星空C:
       - page/brd/starry-sky-c/index.md
       - v1.0: page/brd/starry-sky-c/v1.0.md
@@ -48,49 +49,68 @@ nav:
       - v2.0 Pi: page/brd/starry-sky-c/v2.0_pi.md
     - 星空T:
       - v1.0: page/brd/starry-sky-t/v1.0.md
+      - v1.0 Pico: page/brd/starry-sky-t/v1.0_pico.md
   - SDK:
-    - 版本简介: page/sdk/index.md
-    - 通用:
-      - 环境准备: page/sdk/common/env.md
-      - 快速上手: page/sdk/common/quickstart.md
-    - SDK 1.0:
-      - API文档:
-        - GPIO: page/sdk/v1.0/gpio.md
-        - QSPI: page/sdk/v1.0/qspi.md
-        - PWM: page/sdk/v1.0/pwm.md
-        - HP_UART: page/sdk/v1.0/hp_uart.md
-        - I2C: page/sdk/v1.0/i2c.md
-        - SYS_UART: page/sdk/v1.0/sys_uart.md
-        - TIMER: page/sdk/v1.0/timer.md
-        - LIBC: page/sdk/v1.0/libc.md
-        - LIBGCC: page/sdk/v1.0/libgcc.md
-      - 示例工程:
-        - Hello World: page/sdk/v1.0/hello_world.md
-    - SDK 2.0:
-      - 开始:
-        - 快速上手: page/sdk/v2.0/start/introduction.md
-      - API文档:
-        - ARCHINFO: page/sdk/v2.0/api/archinfo.md
-        - CRC: page/sdk/v2.0/api/crc.md
-        - FATFS: page/sdk/v2.0/api/fatfs.md
-        - GPIO: page/sdk/v2.0/api/gpio.md
-        - HP_UART: page/sdk/v2.0/api/hp_uart.md
-        - I2C: page/sdk/v2.0/api/i2c.md
-        - LETTER_SHELL: page/sdk/v2.0/api/letter-shell.md
-        - PS2: page/sdk/v2.0/api/ps2.md
-        - PWM: page/sdk/v2.0/api/pwm.md
-        - QSPI: page/sdk/v2.0/api/qspi.md
-        - RCU: page/sdk/v2.0/api/rcu.md
-        - RNG: page/sdk/v2.0/api/rng.md
-        - RTC: page/sdk/v2.0/api/rtc.md
-        - SFUD: page/sdk/v2.0/api/sfud.md
-        - SPI_SOFTWARE: page/sdk/v2.0/api/spi_software.md
-        - SYS_UART: page/sdk/v2.0/api/sys_uart.md
-        - TIMER: page/sdk/v2.0/api/timer.md
-        - WDG: page/sdk/v2.0/api/wdg.md
-    - SDK 3.0:
-      - 开发指南: page/sdk/v3.0/index.md
-    - templates:
-      - explanation: page/sdk/templates/explanation.md
-    - ip:
-      - uart_main: page/ip/uart_main.md
+    - 版本概览: page/sdk/index.md
+    - 通用文档:
+      - 环境准备（WSL）: page/sdk/common/env.md
+      - 快速上手（2.0 示例）: page/sdk/common/quickstart.md
+    - SDK 3.0（开发中）:
+      - SDK 3.0（开发中）: page/sdk/v3.0/index.md
+      - 安装: page/sdk/v3.0/install.md
+      - 快速上手: page/sdk/v3.0/quickstart.md
+      - 命令行工具: page/sdk/v3.0/cli.md
+      - 工程与配置: page/sdk/v3.0/project.md
+      - 应用开发:
+        - 应用开发: page/sdk/v3.0/api/index.md
+        - 错误、日志与骨架: page/sdk/v3.0/api/core.md
+        - BSP: page/sdk/v3.0/api/bsp.md
+        - Driver: page/sdk/v3.0/api/driver.md
+        - Device 与 Component: page/sdk/v3.0/api/device.md
+      - 示例工程: page/sdk/v3.0/examples.md
+      - 从 2.0 迁移: page/sdk/v3.0/migration.md
+      - 故障排查: page/sdk/v3.0/troubleshooting.md
+    - SDK 2.0（推荐）:
+      - SDK 2.0（推荐）: page/sdk/v2.0/index.md
+      - 快速上手: page/sdk/v2.0/start/introduction.md
+      - API 参考:
+        - 系统与基础:
+          - ARCHINFO: page/sdk/v2.0/api/archinfo.md
+          - CRC: page/sdk/v2.0/api/crc.md
+          - RCU: page/sdk/v2.0/api/rcu.md
+          - RNG: page/sdk/v2.0/api/rng.md
+          - TIMER: page/sdk/v2.0/api/timer.md
+          - WDG: page/sdk/v2.0/api/wdg.md
+        - 通信与总线:
+          - HP_UART: page/sdk/v2.0/api/hp_uart.md
+          - SYS_UART: page/sdk/v2.0/api/sys_uart.md
+          - I2C: page/sdk/v2.0/api/i2c.md
+          - QSPI: page/sdk/v2.0/api/qspi.md
+          - SPI_SOFTWARE: page/sdk/v2.0/api/spi_software.md
+          - PS2: page/sdk/v2.0/api/ps2.md
+        - 存储与文件系统:
+          - FATFS: page/sdk/v2.0/api/fatfs.md
+          - SFUD: page/sdk/v2.0/api/sfud.md
+        - 外设与组件:
+          - GPIO: page/sdk/v2.0/api/gpio.md
+          - PWM: page/sdk/v2.0/api/pwm.md
+          - RTC: page/sdk/v2.0/api/rtc.md
+          - LETTER_SHELL: page/sdk/v2.0/api/letter-shell.md
+      - 模板与板卡支持: page/sdk/templates/explanation.md
+    - SDK 1.0（历史版本）:
+      - SDK 1.0（历史版本）: page/sdk/v1.0/index.md
+      - API 参考:
+        - 基础与外设:
+          - GPIO: page/sdk/v1.0/gpio.md
+          - TIMER: page/sdk/v1.0/timer.md
+          - LIBC: page/sdk/v1.0/libc.md
+          - LIBGCC: page/sdk/v1.0/libgcc.md
+        - 总线与通信:
+          - QSPI: page/sdk/v1.0/qspi.md
+          - PWM: page/sdk/v1.0/pwm.md
+          - HP_UART: page/sdk/v1.0/hp_uart.md
+          - I2C: page/sdk/v1.0/i2c.md
+          - SYS_UART: page/sdk/v1.0/sys_uart.md
+      - Hello World: page/sdk/v1.0/hello_world.md
+  - 硬件 IP:
+    - APB4 UART 控制器: page/ip/uart_main.md

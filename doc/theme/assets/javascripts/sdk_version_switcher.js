@@ -2,7 +2,6 @@
   const STORAGE_KEY = "ecos.sdk.version";
   const DEFAULT_VERSION = "2.0";
   const SDK_ROOT_SEGMENTS = ["page", "sdk"];
-  const SDK_COMMON_SEGMENT = "common";
   const SDK_VERSIONS = {
     "1.0": {
       segment: "v1.0",
@@ -14,24 +13,6 @@
       segment: "v3.0",
     },
   };
-  const SDK_PAGE_MAP = {
-    gpio: { "1.0": "gpio", "2.0": "gpio_v2" },
-    qspi: { "1.0": "qspi" },
-    pwm: { "1.0": "pwm" },
-    hp_uart: { "1.0": "hp_uart" },
-    i2c: { "1.0": "i2c" },
-    sys_uart: { "1.0": "sys_uart", "2.0": "sys_uart_v2" },
-    timer: { "1.0": "timer" },
-    libc: { "1.0": "libc" },
-    libgcc: { "1.0": "libgcc" },
-    hello_world: { "1.0": "hello_world" },
-  };
-  const SLUG_TO_PAGE_KEY = Object.entries(SDK_PAGE_MAP).reduce((index, [pageKey, versions]) => {
-    for (const slug of Object.values(versions)) {
-      index[slug] = pageKey;
-    }
-    return index;
-  }, {});
 
   const findPrimaryNav = () =>
     document.querySelector(".md-sidebar.md-sidebar--primary .md-nav--primary");
@@ -103,142 +84,60 @@
 
   const isSdkPath = (pathname) => Boolean(getSdkPathInfo(pathname));
 
+  const isSdkLandingPath = (pathname) => {
+    const sdkPath = getSdkPathInfo(pathname);
+    return Boolean(sdkPath) && sdkPath.trailingSegments.length === 0;
+  };
+
   const getVersionFromPath = (pathname) => {
     const sdkPath = getSdkPathInfo(pathname);
     if (!sdkPath) return null;
 
     const [scope] = sdkPath.trailingSegments;
+    if (!scope) return "overview";
     if (scope === SDK_VERSIONS["1.0"].segment) return "1.0";
     if (scope === SDK_VERSIONS["2.0"].segment) return "2.0";
     if (scope === SDK_VERSIONS["3.0"].segment) return "3.0";
-    if (scope === SDK_COMMON_SEGMENT || !scope) {
-      return "common";
-    }
+    if (scope === "common") return "common";
+    if (scope === "templates") return "2.0";
 
-    return "common";
+    // Legacy unversioned SDK pages belong to the 2.x documentation set.
+    return "2.0";
   };
 
-  const isVersionScopedPath = (pathname) => {
-    const version = getVersionFromPath(pathname);
-    return version === "1.0" || version === "2.0" || version === "3.0";
-  };
+  const isVersionScopedPath = (pathname) => isSdkVersion(getVersionFromPath(pathname));
 
   const getStoredVersion = () => {
-    const v = window.localStorage?.getItem(STORAGE_KEY);
-    return v === "1.0" || v === "2.0" || v === "3.0" ? v : null;
+    const version = window.localStorage?.getItem(STORAGE_KEY);
+    return isSdkVersion(version) ? version : null;
   };
 
   const setStoredVersion = (version) => {
-    if (version !== "1.0" && version !== "2.0" && version !== "3.0") return;
+    if (!isSdkVersion(version)) return;
     window.localStorage?.setItem(STORAGE_KEY, version);
   };
 
-  const getSdkRootPath = (pathname) => {
-    return getSdkPathInfo(pathname)?.rootPathWithSlash || buildPathFromSegments(SDK_ROOT_SEGMENTS, true);
-  };
-
-  const getVersionedSlug = (pathname) => {
-    const version = getVersionFromPath(pathname);
+  const buildVersionRootPath = (pathname, targetVersion) => {
     const sdkPath = getSdkPathInfo(pathname);
-    if (!sdkPath || !SDK_VERSIONS[version]) return null;
-
-    const trailingSegments = sdkPath.trailingSegments;
-    if (trailingSegments[0] !== SDK_VERSIONS[version].segment) return null;
-    return trailingSegments[1] || null;
-  };
-
-  const buildTargetPath = (pathname, targetVersion) => {
-    const sdkPath = getSdkPathInfo(pathname);
-    if (!sdkPath || !isVersionScopedPath(pathname)) {
-      return pathname;
-    }
-
-    const currentSlug = getVersionedSlug(pathname);
-    const pageKey = currentSlug ? SLUG_TO_PAGE_KEY[currentSlug] : null;
-    const nextSlug = pageKey ? SDK_PAGE_MAP[pageKey]?.[targetVersion] : null;
-
-    if (!nextSlug) {
-      if (targetVersion === "3.0") {
-        return buildPathFromSegments(
-          [
-            ...sdkPath.prefixSegments,
-            ...SDK_ROOT_SEGMENTS,
-            SDK_VERSIONS[targetVersion].segment,
-          ],
-          true
-        );
-      }
-      return getSdkRootPath(pathname);
-    }
+    if (!sdkPath || !SDK_VERSIONS[targetVersion]) return pathname;
 
     return buildPathFromSegments(
-      [...sdkPath.prefixSegments, ...SDK_ROOT_SEGMENTS, SDK_VERSIONS[targetVersion].segment, nextSlug],
+      [...sdkPath.prefixSegments, ...SDK_ROOT_SEGMENTS, SDK_VERSIONS[targetVersion].segment],
       true
     );
   };
 
   const resolveCurrentVersion = (pathname) => {
     const inferred = getVersionFromPath(pathname);
-    if (inferred === "1.0" || inferred === "2.0" || inferred === "3.0") return inferred;
+    if (isSdkVersion(inferred)) return inferred;
     return getStoredVersion() || getActiveVersion() || DEFAULT_VERSION;
   };
 
-  const classifyVersionItem = (item) => {
-    const markedVersion = item.getAttribute("data-sdk-version");
-    if (markedVersion === "1.0" || markedVersion === "2.0" || markedVersion === "3.0") {
-      return markedVersion;
-    }
-
-    const hrefs = Array.from(item.querySelectorAll("a[href]"))
-      .map((link) => link.pathname || "")
-      .filter((pathname) => pathname && pathname !== "/");
-
-    const hasV1 = hrefs.some((pathname) => getVersionFromPath(pathname) === "1.0");
-    const hasV2 = hrefs.some((pathname) => getVersionFromPath(pathname) === "2.0");
-    const hasV3 = hrefs.some((pathname) => getVersionFromPath(pathname) === "3.0");
-
-    if (hasV1 && !hasV2 && !hasV3) return "1.0";
-    if (hasV2 && !hasV1 && !hasV3) return "2.0";
-    if (hasV3 && !hasV1 && !hasV2) return "3.0";
-    return null;
-  };
-
-  const findSdkNavItem = (primaryNav) => {
-    const items = Array.from(primaryNav.querySelectorAll(":scope > .md-nav__list > .md-nav__item"));
-
-    for (const item of items) {
-      const directLink = item.querySelector(":scope > .md-nav__link, :scope > .md-nav__container > .md-nav__link");
-      const pathname = directLink?.pathname || "";
-      if (isSdkPath(pathname)) {
-        return item;
-      }
-    }
-
-    return null;
-  };
-
-  const findVersionNavItems = (primaryNav) => {
-    const markedV1 = primaryNav.querySelector('.md-nav__item[data-sdk-version="1.0"]');
-    const markedV2 = primaryNav.querySelector('.md-nav__item[data-sdk-version="2.0"]');
-    const markedV3 = primaryNav.querySelector('.md-nav__item[data-sdk-version="3.0"]');
-    if (markedV1 || markedV2 || markedV3) {
-      return { "1.0": markedV1, "2.0": markedV2, "3.0": markedV3 };
-    }
-
-    const result = { "1.0": null, "2.0": null, "3.0": null };
-    const sdkNavItem = findSdkNavItem(primaryNav);
-    if (!sdkNavItem) return result;
-
-    const items = Array.from(sdkNavItem.querySelectorAll(":scope > nav.md-nav > ul.md-nav__list > li.md-nav__item"));
-
-    for (const item of items) {
-      const version = classifyVersionItem(item);
-      if (version) result[version] = item;
-      if (result["1.0"] && result["2.0"] && result["3.0"]) break;
-    }
-
-    return result;
-  };
+  const findVersionNavItems = (primaryNav) => ({
+    "1.0": primaryNav.querySelector('.md-nav__item[data-sdk-version="1.0"]'),
+    "2.0": primaryNav.querySelector('.md-nav__item[data-sdk-version="2.0"]'),
+    "3.0": primaryNav.querySelector('.md-nav__item[data-sdk-version="3.0"]'),
+  });
 
   const setNavVisibility = (item, visible) => {
     if (!item) return;
@@ -256,6 +155,15 @@
     return true;
   };
 
+  const clearVersionState = (primaryNav) => {
+    delete document.documentElement.dataset.sdkNavVersion;
+    if (primaryNav) {
+      delete primaryNav.dataset.sdkCurrentVersion;
+      const navItems = findVersionNavItems(primaryNav);
+      Object.values(navItems).forEach((item) => setNavVisibility(item, true));
+    }
+  };
+
   const updateExistingSelect = (container, currentVersion) => {
     const select = container?.querySelector("select");
     if (!select) return;
@@ -263,7 +171,7 @@
   };
 
   const getNavigationIntentVersion = (pathname) => {
-    if (!isSdkPath(pathname)) return null;
+    if (!isSdkPath(pathname) || isSdkLandingPath(pathname)) return null;
 
     const inferred = getVersionFromPath(pathname);
     if (isSdkVersion(inferred)) return inferred;
@@ -278,8 +186,25 @@
     const pathname = window.location.pathname || "/";
     const existing = document.getElementById("ecos-sdk-version-switcher");
 
+    // The version UI is only emitted for the Chinese SDK navigation.
+    if (primaryNav.dataset.sdkContext !== "sdk") {
+      if (existing) existing.style.display = "none";
+      clearVersionState(primaryNav);
+      return;
+    }
+
     if (!isSdkPath(pathname)) {
       if (existing) existing.style.display = "none";
+      clearVersionState(primaryNav);
+      return;
+    }
+
+    if (isSdkLandingPath(pathname)) {
+      if (existing) existing.style.display = "none";
+
+      const landingVersion = getStoredVersion() || getActiveVersion() || DEFAULT_VERSION;
+      applyVersionState(landingVersion);
+      applyNavVisibility(primaryNav, landingVersion);
       return;
     }
 
@@ -293,31 +218,30 @@
       return;
     }
 
-    if (existing) {
-      existing.style.display = "";
-      updateExistingSelect(existing, currentVersion);
+    if (!existing) return;
 
-      const select = existing.querySelector("select");
-      if (select) {
-        if (!select.dataset.bound) {
-          select.dataset.bound = "true";
-          select.addEventListener("change", (e) => {
-            const targetVersion = e.target?.value;
-            if (targetVersion !== "1.0" && targetVersion !== "2.0" && targetVersion !== "3.0") return;
+    existing.style.display = "";
+    updateExistingSelect(existing, currentVersion);
 
-            setStoredVersion(targetVersion);
-            applyVersionState(targetVersion);
-            const nextPath = buildTargetPath(window.location.pathname || "/", targetVersion);
-            if (nextPath === (window.location.pathname || "/")) {
-              render();
-              return;
-            }
+    const select = existing.querySelector("select");
+    if (select && !select.dataset.bound) {
+      select.dataset.bound = "true";
+      select.addEventListener("change", (e) => {
+        const targetVersion = e.target?.value;
+        if (!isSdkVersion(targetVersion)) return;
 
-            const nextUrl = `${nextPath}${window.location.search || ""}${window.location.hash || ""}`;
-            window.location.assign(nextUrl);
-          });
+        setStoredVersion(targetVersion);
+        applyVersionState(targetVersion);
+
+        const current = getVersionFromPath(window.location.pathname || "/");
+        if (isSdkVersion(current) && current !== targetVersion) {
+          const nextPath = buildVersionRootPath(window.location.pathname || "/", targetVersion);
+          window.location.assign(`${nextPath}${window.location.search || ""}`);
+          return;
         }
-      }
+
+        render();
+      });
     }
   };
 
@@ -335,21 +259,17 @@
     render();
     document.addEventListener("click", primeNavigationVersion, true);
 
-    // Material for MkDocs emits custom events during instant navigation
-    // document$ is an Observable provided by the theme
+    // Material for MkDocs emits document$ during instant navigation.
     if (typeof document$ !== "undefined") {
       document$.subscribe(() => {
         render();
       });
     }
 
-    // Fallback mutation observer to handle dynamic changes
     const observer = new MutationObserver(() => {
       render();
     });
 
-    // Observe the main content area instead of documentElement to avoid over-triggering,
-    // or keep observing the sidebar area where the element needs to live.
     const sidebarContainer = document.querySelector(".md-sidebar.md-sidebar--primary");
     if (sidebarContainer) {
       observer.observe(sidebarContainer, { subtree: true, childList: true });

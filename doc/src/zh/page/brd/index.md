@@ -295,8 +295,8 @@ table.ecos-product-table tr:hover {
     <div class="ecos-series-title-row">
       <h2 class="ecos-series-title">星空L系列 (Starry Sky L)</h2>
       <div class="ecos-series-actions">
-        <a href="../sdk/env" class="ecos-btn ecos-btn-primary">环境配置</a>
-        <a href="../sdk/quickstart" class="ecos-btn ecos-btn-outline">快速上手</a>
+        <a href="../sdk/common/env/" class="ecos-btn ecos-btn-primary">环境配置</a>
+        <a href="../sdk/common/quickstart/" class="ecos-btn ecos-btn-outline">快速上手</a>
       </div>
     </div>
     <p class="ecos-series-subtitle">面向“一生一芯”计划的高性能 RISC-V 验证与教育平台</p>

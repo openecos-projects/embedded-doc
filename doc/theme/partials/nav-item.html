@@ -40,8 +40,21 @@
     </a>
   {% endif %}
 {% endmacro %}
-{% macro render(nav_item, path, level, parent) %}
+{% macro render(nav_item, path, level, parent, in_version=false) %}
   {% set class = "md-nav__item" %}
+  {% set is_sdk_landing = page and (page.url == "page/sdk/" or page.url == "page/sdk" or page.url == "page/sdk/index.html") %}
+  {% set page_ver = namespace(value="") %}
+  {% if page %}
+    {% if "page/sdk/v1.0/" in page.url %}
+      {% set page_ver.value = "1.0" %}
+    {% elif "page/sdk/v2.0/" in page.url %}
+      {% set page_ver.value = "2.0" %}
+    {% elif "page/sdk/v3.0/" in page.url %}
+      {% set page_ver.value = "3.0" %}
+    {% elif "page/sdk/templates/" in page.url %}
+      {% set page_ver.value = "2.0" %}
+    {% endif %}
+  {% endif %}
   {% if nav_item.active %}
     {% set class = class ~ " md-nav__item--active" %}
   {% endif %}
@@ -83,28 +96,33 @@
         {% set is_pruned = true %}
       {% endif %}
     {% endif %}
-    {% set sdk_attr = "" %}
-    {% set sdk_hidden = false %}
-    {% if nav_item.title == "SDK 1.0" %}
-      {% set sdk_attr = ' data-sdk-version="1.0"' %}
-      {% if page and "page/sdk/" in page.url and "page/sdk/v1.0/" not in page.url %}
-        {% set sdk_hidden = true %}
-      {% endif %}
-    {% elif nav_item.title == "SDK 2.0" %}
-      {% set sdk_attr = ' data-sdk-version="2.0"' %}
-      {% if page and "page/sdk/v1.0/" in page.url %}
-        {% set sdk_hidden = true %}
-      {% endif %}
-    {% elif nav_item.title == "SDK 3.0" %}
-      {% set sdk_attr = ' data-sdk-version="3.0"' %}
-      {% if page and "page/sdk/" in page.url and "page/sdk/v3.0/" not in page.url %}
-        {% set sdk_hidden = true %}
+    {% set ver = namespace(value="") %}
+    {% if index and index.url %}
+      {% if index.url in ["page/sdk/v1.0/", "page/sdk/v1.0"] %}
+        {% set ver.value = "1.0" %}
+      {% elif index.url in ["page/sdk/v2.0/", "page/sdk/v2.0"] %}
+        {% set ver.value = "2.0" %}
+      {% elif index.url in ["page/sdk/v3.0/", "page/sdk/v3.0"] %}
+        {% set ver.value = "3.0" %}
       {% endif %}
     {% endif %}
+    {% set sdk_attr = "" %}
+    {% if ver.value == "1.0" %}
+      {% set sdk_attr = ' data-sdk-version="1.0"' %}
+    {% elif ver.value == "2.0" %}
+      {% set sdk_attr = ' data-sdk-version="2.0"' %}
+    {% elif ver.value == "3.0" %}
+      {% set sdk_attr = ' data-sdk-version="3.0"' %}
+    {% endif %}
+    {% set sdk_hidden = false %}
+    {% if not is_sdk_landing and page_ver.value and ver.value and page_ver.value != ver.value %}
+      {% set sdk_hidden = true %}
+    {% endif %}
+    {% set child_in_version = in_version or (ver.value != "") %}
     <li class="{{ class }} md-nav__item--nested"{{ sdk_attr }}{% if sdk_hidden %} hidden aria-hidden="true"{% endif %}>
       {% if not is_pruned %}
         {% set checked = "checked" if nav_item.active %}
-        {% if "navigation.expand" in features and not checked %}
+        {% if "navigation.expand" in features and not checked and not (is_sdk_landing and (in_version or ver.value != "")) %}
           {% set indeterminate = "md-toggle--indeterminate" %}
         {% endif %}
         <input class="md-nav__toggle md-toggle {{ indeterminate }}" type="checkbox" id="{{ path }}" {{ checked }}>
@@ -136,7 +154,7 @@
           <ul class="md-nav__list" data-md-scrollfix>
             {% for item in nav_item.children %}
               {% if not index or item != index %}
-                {{ render(item, path ~ "_" ~ loop.index, level + 1, nav_item) }}
+                {{ render(item, path ~ "_" ~ loop.index, level + 1, nav_item, child_in_version) }}
               {% endif %}
             {% endfor %}
           </ul>
