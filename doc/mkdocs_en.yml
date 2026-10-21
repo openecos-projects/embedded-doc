@@ -34,6 +34,88 @@ nav:
   - Home: index.md
   - Boards:
     - page/brd/index.md
+    - StarrySky L:
+      - page/brd/starry-sky-l/index.md
+      - v1.2 (YSYX Phase 3): page/brd/starry-sky-l/v1.2.md
+      - v1.3 (YSYX Phase 3): page/brd/starry-sky-l/v1.3.md
+      - v2.1 (YSYX Phase 4): page/brd/starry-sky-l/v2.1.md
+      - v3.0 (YSYX Phase 5): page/brd/starry-sky-l/v3.0.md
+      - v3.1 (YSYX Phase 5): page/brd/starry-sky-l/v3.1.md
+      - v4.0: page/brd/starry-sky-l/v4.0.md
+    - StarrySky C:
+      - page/brd/starry-sky-c/index.md
+      - v1.0: page/brd/starry-sky-c/v1.0.md
+      - v2.0 Pico: page/brd/starry-sky-c/v2.0_pico.md
+      - v2.0 Pi: page/brd/starry-sky-c/v2.0_pi.md
+    - StarrySky T:
+      - v1.0: page/brd/starry-sky-t/v1.0.md
+      - v1.0 Pico: page/brd/starry-sky-t/v1.0_pico.md
   - SDK:
-    - Environment Setup: page/sdk/common/env.md
-    - Quick Start: page/sdk/common/quickstart.md
+    - Environment Setup (WSL): page/sdk/common/env.md
+    - Quick Start (SDK 2.0 Example): page/sdk/common/quickstart.md
+    - SDK 3.0 (In Development):
+      - SDK 3.0 (In Development): page/sdk/v3.0/index.md
+      - Installation: page/sdk/v3.0/install.md
+      - Quick Start: page/sdk/v3.0/quickstart.md
+      - ecos CLI: page/sdk/v3.0/cli.md
+      - Projects and Configuration: page/sdk/v3.0/project.md
+      - Application Development:
+        - Application Development: page/sdk/v3.0/api/index.md
+        - Errors, Logging and Skeleton: page/sdk/v3.0/api/core.md
+        - BSP: page/sdk/v3.0/api/bsp.md
+        - Driver:
+          - Driver Overview: page/sdk/v3.0/api/driver.md
+          - Peripherals and Buses:
+            - GPIO: page/sdk/v3.0/api/driver/gpio.md
+            - GPIO Interrupt: page/sdk/v3.0/api/driver/gpio_interrupt.md
+            - UART: page/sdk/v3.0/api/driver/uart.md
+            - I2C: page/sdk/v3.0/api/driver/i2c.md
+            - PWM: page/sdk/v3.0/api/driver/pwm.md
+            - Timer: page/sdk/v3.0/api/driver/timer.md
+            - Timer Interrupt: page/sdk/v3.0/api/driver/timer_interrupt.md
+            - QSPI: page/sdk/v3.0/api/driver/qspi.md
+            - PS/2: page/sdk/v3.0/api/driver/ps2.md
+          - Chip Services:
+            - WDG: page/sdk/v3.0/api/driver/wdg.md
+            - RCU: page/sdk/v3.0/api/driver/rcu.md
+            - RTC: page/sdk/v3.0/api/driver/rtc.md
+            - RNG: page/sdk/v3.0/api/driver/rng.md
+            - CRC: page/sdk/v3.0/api/driver/crc.md
+            - ARCHINFO: page/sdk/v3.0/api/driver/archinfo.md
+          - Interrupts and Special Peripherals:
+            - Interrupt: page/sdk/v3.0/api/driver/interrupt.md
+            - CLINT: page/sdk/v3.0/api/driver/clint.md
+            - SDRAM: page/sdk/v3.0/api/driver/sdram.md
+        - Device:
+          - Device Overview: page/sdk/v3.0/api/device.md
+          - I2C Devices:
+            - AHT20: page/sdk/v3.0/api/device/aht20.md
+            - AT24C64: page/sdk/v3.0/api/device/at24c64.md
+            - SGP30: page/sdk/v3.0/api/device/sgp30.md
+            - PCF8563: page/sdk/v3.0/api/device/pcf8563.md
+          - Display and Indicators:
+            - ST7735: page/sdk/v3.0/api/device/st7735.md
+            - ST7789: page/sdk/v3.0/api/device/st7789.md
+            - TM1650: page/sdk/v3.0/api/device/tm1650.md
+            - Buzzer: page/sdk/v3.0/api/device/buzzer.md
+          - Communication Modules:
+            - ESP01S: page/sdk/v3.0/api/device/esp01s.md
+        - Component:
+          - Component Overview: page/sdk/v3.0/api/components.md
+          - Runtime:
+            - libc Subset: page/sdk/v3.0/api/components/libc.md
+            - heap: page/sdk/v3.0/api/components/heap.md
+            - LightCoroutine: page/sdk/v3.0/api/components/light-coroutine.md
+          - Storage:
+            - sfud: page/sdk/v3.0/api/components/sfud.md
+            - fatfs: page/sdk/v3.0/api/components/fatfs.md
+          - Shell and Tools:
+            - letter-shell: page/sdk/v3.0/api/components/letter-shell.md
+            - letter-shell-fs: page/sdk/v3.0/api/components/letter-shell-fs.md
+            - text-editor: page/sdk/v3.0/api/components/text-editor.md
+            - fcc: page/sdk/v3.0/api/components/fcc.md
+          - Bus:
+            - soft-spi: page/sdk/v3.0/api/components/soft-spi.md
+      - Examples: page/sdk/v3.0/examples.md
+      - Migrating from 2.0: page/sdk/v3.0/migration.md
+      - Troubleshooting: page/sdk/v3.0/troubleshooting.md

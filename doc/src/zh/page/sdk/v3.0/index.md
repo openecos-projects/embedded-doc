@@ -19,7 +19,7 @@
 | 工程结构与配置 | [工程与配置](project.md) |
 | 应用接口总览 | [应用开发](api/index.md) |
 | 错误、日志与标准骨架 | [错误、日志与标准骨架](api/core.md) |
-| BSP / Driver / Device | [BSP](api/bsp.md) · [Driver](api/driver.md) · [Device 与 Component](api/device.md) |
+| BSP / Driver / Device / Component | [BSP](api/bsp.md) · [Driver](api/driver.md) · [Device](api/device.md) · [Component](api/components.md) |
 | 示例 | [示例工程](examples.md) |
 | 从 2.0 迁移 | [从 SDK 2.0 迁移](migration.md) |
 | 故障排查 | [故障排查](troubleshooting.md) |

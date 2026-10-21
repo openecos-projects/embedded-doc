@@ -65,8 +65,59 @@ nav:
         - 应用开发: page/sdk/v3.0/api/index.md
         - 错误、日志与骨架: page/sdk/v3.0/api/core.md
         - BSP: page/sdk/v3.0/api/bsp.md
-        - Driver: page/sdk/v3.0/api/driver.md
-        - Device 与 Component: page/sdk/v3.0/api/device.md
+        - Driver:
+          - Driver 概览: page/sdk/v3.0/api/driver.md
+          - 外设与总线:
+            - GPIO: page/sdk/v3.0/api/driver/gpio.md
+            - GPIO 中断: page/sdk/v3.0/api/driver/gpio_interrupt.md
+            - UART: page/sdk/v3.0/api/driver/uart.md
+            - I2C: page/sdk/v3.0/api/driver/i2c.md
+            - PWM: page/sdk/v3.0/api/driver/pwm.md
+            - Timer: page/sdk/v3.0/api/driver/timer.md
+            - Timer 中断: page/sdk/v3.0/api/driver/timer_interrupt.md
+            - QSPI: page/sdk/v3.0/api/driver/qspi.md
+            - PS/2: page/sdk/v3.0/api/driver/ps2.md
+          - 芯片服务:
+            - WDG: page/sdk/v3.0/api/driver/wdg.md
+            - RCU: page/sdk/v3.0/api/driver/rcu.md
+            - RTC: page/sdk/v3.0/api/driver/rtc.md
+            - RNG: page/sdk/v3.0/api/driver/rng.md
+            - CRC: page/sdk/v3.0/api/driver/crc.md
+            - ARCHINFO: page/sdk/v3.0/api/driver/archinfo.md
+          - 中断与特殊外设:
+            - Interrupt: page/sdk/v3.0/api/driver/interrupt.md
+            - CLINT: page/sdk/v3.0/api/driver/clint.md
+            - SDRAM: page/sdk/v3.0/api/driver/sdram.md
+        - Device:
+          - Device 概览: page/sdk/v3.0/api/device.md
+          - I2C 器件:
+            - AHT20: page/sdk/v3.0/api/device/aht20.md
+            - AT24C64: page/sdk/v3.0/api/device/at24c64.md
+            - SGP30: page/sdk/v3.0/api/device/sgp30.md
+            - PCF8563: page/sdk/v3.0/api/device/pcf8563.md
+          - 显示与指示:
+            - ST7735: page/sdk/v3.0/api/device/st7735.md
+            - ST7789: page/sdk/v3.0/api/device/st7789.md
+            - TM1650: page/sdk/v3.0/api/device/tm1650.md
+            - Buzzer: page/sdk/v3.0/api/device/buzzer.md
+          - 通信模组:
+            - ESP01S: page/sdk/v3.0/api/device/esp01s.md
+        - Component:
+          - Component 概览: page/sdk/v3.0/api/components.md
+          - 基础运行时:
+            - libc 子集: page/sdk/v3.0/api/components/libc.md
+            - heap: page/sdk/v3.0/api/components/heap.md
+            - LightCoroutine: page/sdk/v3.0/api/components/light-coroutine.md
+          - 存储:
+            - sfud: page/sdk/v3.0/api/components/sfud.md
+            - fatfs: page/sdk/v3.0/api/components/fatfs.md
+          - Shell 与工具:
+            - letter-shell: page/sdk/v3.0/api/components/letter-shell.md
+            - letter-shell-fs: page/sdk/v3.0/api/components/letter-shell-fs.md
+            - text-editor: page/sdk/v3.0/api/components/text-editor.md
+            - fcc: page/sdk/v3.0/api/components/fcc.md
+          - 总线:
+            - soft-spi: page/sdk/v3.0/api/components/soft-spi.md
       - 示例工程: page/sdk/v3.0/examples.md
       - 从 2.0 迁移: page/sdk/v3.0/migration.md
       - 故障排查: page/sdk/v3.0/troubleshooting.md
