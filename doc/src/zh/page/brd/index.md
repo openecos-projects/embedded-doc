@@ -394,6 +394,20 @@ table.ecos-product-table tr:hover {
           <td>1.44" LCD, UART, I2C, Type-C, Chiplink，WiFi</td>
           <td class="ecos-td-desc">一生一芯五期二批学员流片芯片开发板卡</td>
         </tr>
+        <tr>
+          <td>
+            <div class="ecos-td-product">
+              <a href="starry-sky-l/v4.0" class="ecos-td-img-link">
+                <img src="../../res/img/brd/starry-sky-l/v4.0/board.webp" class="ecos-td-img" alt="L4">
+              </a>
+              <a href="starry-sky-l/v4.0" class="ecos-td-name">星空L4</a>
+            </div>
+          </td>
+          <td>PSRAM: 8MB<br>EEPROM: 8KB<br>Flash: 16MB</td>
+          <td>SoC 主板</td>
+          <td>数码管, 温湿度传感器, 蜂鸣器, UART, I2C, SPI, ESP-01S</td>
+          <td class="ecos-td-desc">面向 RISC-V SoC 学习、嵌入式原型搭建和外设实验的开发板。</td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -474,6 +488,56 @@ table.ecos-product-table tr:hover {
           <td>N/A</td>
           <td>UART, SPI, I2C, GPIO, PWM</td>
           <td class="ecos-td-desc">基于开源retroSoC，板载继承丰富外设，适合学习开发使用。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 星空T系列 Card -->
+<div class="ecos-series-card">
+  <div class="ecos-series-header">
+    <div class="ecos-series-title-row">
+      <h2 class="ecos-series-title">星空T系列 (Starry Sky T)</h2>
+      <div class="ecos-series-actions">
+        <a href="starry-sky-t/v1.0" class="ecos-btn ecos-btn-primary">T1 主板</a>
+      </div>
+    </div>
+    <p class="ecos-series-subtitle">面向 RISC-V SoC 学习与嵌入式原型开发的平台</p>
+    <ul class="ecos-series-features">
+      <li>提供 SDRAM、SPI Flash 和 USB 转 UART</li>
+      <li>支持 GPIO、I2C、QSPI 和 JTAG 扩展</li>
+      <li>配套 ECOS-SDK 板级支持</li>
+    </ul>
+  </div>
+
+  <div class="ecos-table-decorator" style="background-color: #198754;"></div>
+
+  <div class="ecos-table-container" style="border-color: #198754;">
+    <table class="ecos-product-table">
+      <thead>
+        <tr>
+          <th style="width: 18%;">板卡型号</th>
+          <th style="width: 18%;">存储</th>
+          <th style="width: 18%;">封装/架构</th>
+          <th style="width: 20%;">主要外设</th>
+          <th style="width: 26%;">描述</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="ecos-td-product">
+              <a href="starry-sky-t/v1.0_pico" class="ecos-td-img-link">
+                <img src="../../res/img/brd/starry-sky-t/v1.0/t1 pico/board.webp" class="ecos-td-img" alt="T1 Pico">
+              </a>
+              <a href="starry-sky-t/v1.0_pico" class="ecos-td-name">星空T1 Pico</a>
+            </div>
+          </td>
+          <td>SDRAM: 32MB<br>Flash: 16MB</td>
+          <td>SoC 主板</td>
+          <td>USB-UART, GPIO, I2C, QSPI, JTAG</td>
+          <td class="ecos-td-desc">面向 RISC-V SoC 学习和嵌入式原型开发的小型开发板。</td>
         </tr>
       </tbody>
     </table>
