@@ -499,9 +499,6 @@ table.ecos-product-table tr:hover {
   <div class="ecos-series-header">
     <div class="ecos-series-title-row">
       <h2 class="ecos-series-title">星空T系列 (Starry Sky T)</h2>
-      <div class="ecos-series-actions">
-        <a href="starry-sky-t/v1.0" class="ecos-btn ecos-btn-primary">T1 主板</a>
-      </div>
     </div>
     <p class="ecos-series-subtitle">面向 RISC-V SoC 学习与嵌入式原型开发的平台</p>
     <ul class="ecos-series-features">
